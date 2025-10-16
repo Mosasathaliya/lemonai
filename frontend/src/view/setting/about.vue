@@ -16,7 +16,7 @@
           <span>{{ $t('setting.about.officialWebsite') }}</span>
         </div>
         <div>
-          <a-button @click="handleOpenLemonPage">{{ $t('setting.about.view') }}</a-button>
+          <a-button @click="handleOpenMightyAgentPage">{{ $t('setting.about.view') }}</a-button>
         </div>
       </div>
       <div class="son">
@@ -95,8 +95,9 @@ function handleOpenReleasePage() {
   window.open(versionInfo.value.updateUrl, '_blank');
 }
 
-function handleOpenLemonPage() {
-  window.open('https://www.lemonai.cc/', '_blank');
+function handleOpenMightyAgentPage() {
+  // Open deployed app root by default
+  window.open('/', '_blank');
 }
 
 function handleIssuePage() {
@@ -169,4 +170,57 @@ onMounted(() => {
   width: 0;
   height: 0;
 }
+
+/* Mighty Agent theming overrides */
+.about {
+  background: linear-gradient(182deg, rgba(16, 33, 71, 0.9) 0%, rgba(8, 17, 37, 0.95) 100%);
+  border-radius: 24px;
+  padding: 32px;
+  border: 1px solid rgba(76, 118, 208, 0.22);
+  box-shadow: 0 24px 50px rgba(6, 12, 29, 0.45);
+  color: var(--ma-text-primary);
+}
+
+.about h2 {
+  color: var(--ma-text-primary);
+  text-shadow: 0 10px 28px rgba(6, 136, 255, 0.25);
+}
+
+.about .options-item {
+  background: rgba(14, 28, 62, 0.6);
+  border: 1px solid rgba(76, 118, 208, 0.18);
+  border-radius: 16px;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+}
+
+.about .options-item .son {
+  border-bottom: 1px solid rgba(76, 118, 208, 0.2);
+}
+
+.about .options-item .son:last-child {
+  border-bottom: none;
+}
+
+.about .options-item span,
+.about .version {
+  color: var(--ma-text-secondary);
+}
+
+.about .options-item .version {
+  color: var(--ma-accent);
+}
+
+.about :deep(.ant-btn) {
+  background: linear-gradient(135deg, var(--ma-primary-strong) 0%, var(--ma-secondary) 70%, var(--ma-accent) 100%) !important;
+  border-color: transparent !important;
+  color: var(--ma-text-primary) !important;
+  box-shadow: var(--ma-shadow-glow);
+}
+
+.about :deep(.ant-btn:hover) {
+  transform: translateY(-1px);
+  box-shadow: 0 18px 40px rgba(32, 210, 255, 0.25) !important;
+}
 </style>
+
+

@@ -49,7 +49,7 @@ class BrowserAgent:
     @staticmethod
     def _extra_body(conversation_id:Optional[str] = None):
         if conversation_id:
-            print(f"INFO   [system] Lemon conversation_id:{conversation_id}")
+            print(f"INFO   [system] Mighty Agent conversation_id:{conversation_id}")
             return {"conversation_id":conversation_id,
                     "enable_thinking": False, 
                     }

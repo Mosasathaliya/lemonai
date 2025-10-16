@@ -27,6 +27,7 @@ import User from '@/assets/sidebar/user.svg'
 import { useUserStore } from '@/store/modules/user.js'
 let { user, membership, points } = useUserStore();
 import versionService from '@/services/version';
+import { brandLinks } from '@/config/brand'
 
 const router = useRouter();
 const opShow = ref(true);
@@ -60,8 +61,11 @@ const isLogin = computed(() => {
 });
 
 const handleVersionInfo = () => {
-  //https://github.com/hexdocom/lemonai/releases
-  window.open("https://github.com/hexdocom/lemonai/releases", '_blank');
+  if (!brandLinks.releases) {
+    console.warn("[brand] Release link is not configured")
+    return;
+  }
+  window.open(brandLinks.releases, '_blank');
 }
 
 //获取用户信息 getUserInfo

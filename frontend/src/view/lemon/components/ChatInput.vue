@@ -235,6 +235,7 @@ import files from "@/services/files";
 import agentService from "@/services/agent";
 import chatService from "@/services/chat";
 import modelService from "@/services/default-model-setting";
+import { embedMessageOrigin } from "@/config/brand";
 
 import { storeToRefs } from "pinia";
 import { useUserStore } from "@/store/modules/user";
@@ -470,7 +471,7 @@ watch(
 
 // 监听 message
 window.addEventListener("message", (event) => {
-  if (event.origin !== "https://lemonai.ai") return; // 安全性检查
+  if (embedMessageOrigin && event.origin !== embedMessageOrigin) return; // 安全性检查
   const { type, payload } = event.data;
   console.log("监听 message 事件", event.data);
   if (type === "transferData") {
@@ -710,13 +711,16 @@ const keydown = (e) => {
 }
 
 .upload-button {
-  border-color: #0000000f;
+  border-color: rgba(76, 118, 208, 0.25);
   border-radius: 6px;
+  background: rgba(22, 39, 82, 0.4);
+  color: var(--ma-text-secondary);
+  transition: all 0.2s ease;
 }
 
 .send-button {
-  background: #1a1a19;
-  border: 1px solid #e5e7eb;
+  background: linear-gradient(135deg, var(--ma-primary-strong) 0%, var(--ma-secondary) 65%, var(--ma-accent) 100%);
+  border: 1px solid var(--ma-border-strong);
   border-radius: 6px;
   display: flex;
   align-items: center;
@@ -724,16 +728,17 @@ const keydown = (e) => {
   transition: all 0.15s ease;
   width: 32px;
   height: 32px;
+  box-shadow: var(--ma-shadow-glow);
 }
 
 .send-button:hover:not(:disabled) {
-  background: #2d2d2a;
+  background: linear-gradient(135deg, var(--ma-secondary) 0%, var(--ma-accent) 100%);
   transform: translateY(-1px);
 }
 
 .stop-button {
-  background: #1a1a19;
-  border: 1px solid #e5e7eb;
+  background: rgba(187, 35, 35, 0.9);
+  border: 1px solid rgba(255, 109, 109, 0.6);
   border-radius: 6px;
   display: flex;
   align-items: center;
@@ -752,17 +757,17 @@ const keydown = (e) => {
 /* 禁用状态下的样式 */
 .send-button:disabled,
 .send-button[disabled] {
-  background: #37352f14;
+  background: rgba(22, 39, 82, 0.35);
   /* 浅灰色背景 */
-  border: 0px solid #37352f14;
+  border: 1px solid rgba(47, 107, 255, 0.2);
   /* 边框颜色 */
-  color: #a8a8a8;
+  color: var(--ma-text-muted);
   /* 文字颜色变浅 */
   cursor: not-allowed;
   /* 鼠标悬停时显示禁用状态 */
 
   svg {
-    fill: #b9b9b7;
+    fill: var(--ma-text-muted);
   }
 }
 
@@ -776,21 +781,24 @@ const keydown = (e) => {
 }
 
 .input-textarea::-webkit-scrollbar-thumb {
-  background-color: #d9d9d9;
+  background-color: rgba(47, 107, 255, 0.45);
   border-radius: 3px;
 }
 
 .input-textarea::-webkit-scrollbar-track {
-  background-color: #f5f5f5;
+  background-color: rgba(10, 20, 45, 0.6);
 }
 
 .chat-input {
-  background: #f8f8f7;
-  border-radius: 22px;
+  background: linear-gradient(182deg, rgba(14, 28, 62, 0.92) 0%, rgba(8, 17, 37, 0.94) 100%);
+  border-radius: 24px;
   margin-top: 0.75rem;
   position: sticky;
   bottom: 0;
   padding-bottom: 0.75rem;
+  border: 1px solid rgba(76, 118, 208, 0.3);
+  box-shadow: var(--ma-shadow-soft);
+  color: var(--ma-text-primary);
 }
 
 .input-wrapper {
@@ -801,32 +809,34 @@ const keydown = (e) => {
 .input-area {
   display: flex;
   gap: 0;
-  background: #fff;
+  background: rgba(17, 34, 74, 0.75);
   align-items: flex-end;
-  border: 1px solid rgb(229, 231, 235);
+  border: 1px solid rgba(76, 118, 208, 0.35);
   border-radius: 22px;
   padding: 0.75rem;
   transition: border-color 0.3s;
+  color: var(--ma-text-primary);
 
   overflow: hidden;
   flex-direction: column;
   align-items: baseline;
 
   &:hover {
-    border-color: rgb(229, 231, 235);
+    border-color: rgba(47, 107, 255, 0.55);
   }
 
   &:focus-within {
-    border-color: rgb(229, 231, 235);
+    border-color: rgba(47, 107, 255, 0.7);
+    box-shadow: var(--ma-shadow-glow);
   }
 
   &:focus {
-    border-color: rgb(229, 231, 235);
+    border-color: rgba(47, 107, 255, 0.7);
   }
 
   &:active {
-    border-color: rgb(229, 231, 235);
-    border: 1px solid rgb(229, 231, 235);
+    border-color: rgba(47, 107, 255, 0.7);
+    border: 1px solid rgba(47, 107, 255, 0.7);
   }
 }
 
@@ -951,11 +961,12 @@ const keydown = (e) => {
 .mode-label {
   font-size: 14px;
   font-weight: 500;
+  color: var(--ma-text-primary);
 }
 
 .mode-desc {
   font-size: 12px;
-  color: #888;
+  color: var(--ma-text-muted);
 }
 
 /* 统一所有Ant Design组件的圆角 */

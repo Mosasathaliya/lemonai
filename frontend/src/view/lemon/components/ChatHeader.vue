@@ -142,7 +142,7 @@ defineEmits(['share'])
 .chat-header {
   padding-top: .75rem;
   padding-bottom: .25rem;
-  background: #f8f8f7;
+  background: rgba(12, 24, 54, 0.9);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -151,6 +151,9 @@ defineEmits(['share'])
   position: sticky;
   top: 0;
   z-index: 10;
+  backdrop-filter: blur(18px);
+  border-bottom: 1px solid rgba(76, 118, 208, 0.25);
+  box-shadow: 0 10px 35px rgba(5, 12, 28, 0.35);
 }
 
 .header-left {
@@ -162,7 +165,7 @@ defineEmits(['share'])
 .chat-title {
   font-size: 18px;
   font-weight: 500;
-  color: #34322d;
+  color: var(--ma-text-primary);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -183,14 +186,16 @@ defineEmits(['share'])
     width: 100%;
     height: 100%;
     padding: 0;
-    border-radius: 100px;
+    border-radius: 999px;
     gap: .25rem;
-    outline: 1px solid #0000000f;
-    outline-offset: -1px;
     align-items: center;
     padding: 0 .75rem;
     height: 2rem;
     cursor: pointer;
+    border: 1px solid rgba(76, 118, 208, 0.25);
+    background: rgba(22, 39, 82, 0.5);
+    color: var(--ma-text-secondary);
+    transition: all 0.2s ease;
   }
 
   .btn {
@@ -199,9 +204,18 @@ defineEmits(['share'])
     justify-content: center;
     width: 28px;
     height: 28px;
-    border-radius: .5rem;
-    padding: 5px;
+    border-radius: .65rem;
+    padding: 6px;
     cursor: pointer;
+    background: rgba(22, 39, 82, 0.55);
+    border: 1px solid rgba(76, 118, 208, 0.28);
+    color: var(--ma-text-secondary);
+    transition: all 0.2s ease;
+
+    svg {
+      width: 18px;
+      height: 18px;
+    }
   }
 }
 
@@ -209,11 +223,12 @@ defineEmits(['share'])
   position: absolute;
   right: -50px;
   top: 50px;
-  background: #fff;
+  background: var(--ma-surface-elevated);
   border-radius: .75rem;
   cursor: pointer;
-  border: 1px solid #0000001f;
+  border: 1px solid var(--ma-border);
   min-width: max-content;
+  box-shadow: var(--ma-shadow-soft);
 
   .edit-name {
     display: flex;
@@ -222,23 +237,29 @@ defineEmits(['share'])
     border-radius: .75rem;
     padding: 12px 16px;
     cursor: pointer;
+    color: var(--ma-text-primary);
+
+    &:hover {
+      background: rgba(47, 107, 255, 0.18);
+      color: var(--ma-accent);
+    }
   }
 }
 
 .favorite {
-  color: #efa201 !important;
+  color: var(--ma-accent) !important;
   svg {
-    stroke: #efa201 !important;
-    fill: #efa201 !important;
+    stroke: var(--ma-accent) !important;
+    fill: var(--ma-accent) !important;
   }
 }
 
 .action-btn {
   padding: 6px 12px;
-  border: 1px solid #e6e6e6;
-  border-radius: 4px;
-  background: transparent;
-  color: #1f2329;
+  border: 1px solid rgba(76, 118, 208, 0.25);
+  border-radius: 10px;
+  background: rgba(22, 39, 82, 0.45);
+  color: var(--ma-text-primary);
   font-size: 14px;
   cursor: pointer;
   display: flex;
@@ -246,7 +267,8 @@ defineEmits(['share'])
   gap: 4px;
 
   &:hover {
-    background: #f5f5f5;
+    background: rgba(47, 107, 255, 0.2);
+    color: var(--ma-accent);
   }
 
   i {
@@ -259,14 +281,14 @@ defineEmits(['share'])
   border-radius: 16px;
   font-size: 14px;
   font-weight: 500;
-  background-color: #e0e0e0;
-  color: #757575;
+  background: rgba(29, 214, 255, 0.18);
+  color: var(--ma-accent);
 }
 
 .edit-title {
   font-size: 13px;
   font-weight: 400;
-  color: #858481;
+  color: var(--ma-text-secondary);
 }
 
 .edit-title-input {
@@ -283,31 +305,35 @@ defineEmits(['share'])
     cursor: pointer;
     font-size: 13px;
     font-weight: 400;
-    color: #535350;
+    color: var(--ma-text-secondary);
     font-size: .875rem;
     line-height: 1.25rem;
     padding-top: .5rem;
     padding-bottom: .5rem;
     padding-left: .75rem;
     padding-right: .75rem;
-    border: 1px solid #0000001f;
+    border: 1px solid rgba(76, 118, 208, 0.3);
     border-radius: 10px;
+    background: rgba(22, 39, 82, 0.35);
+    transition: all 0.2s ease;
   }
 
   .confirm-btn {
     cursor: pointer;
     font-size: 13px;
     font-weight: 400;
-    background: #1a1a19;
-    color: #fff;
+    background: linear-gradient(135deg, var(--ma-primary-strong) 0%, var(--ma-secondary) 70%, var(--ma-accent) 100%);
+    color: var(--ma-text-primary);
     font-size: .875rem;
     line-height: 1.25rem;
     padding-top: .5rem;
     padding-bottom: .5rem;
     padding-left: .75rem;
     padding-right: .75rem;
-    border: 1px solid #ffffff33;
+    border: 1px solid var(--ma-border-strong);
     border-radius: 10px;
+    box-shadow: var(--ma-shadow-glow);
+    transition: all 0.2s ease;
   }
 }
 
@@ -338,19 +364,23 @@ defineEmits(['share'])
 
 @media (hover: hover) and (pointer: fine) {
   .share-btn:hover {
-    background: #37352f14;
+    background: rgba(47, 107, 255, 0.22);
+    color: var(--ma-accent);
+    box-shadow: var(--ma-shadow-glow);
   }
   .btn:hover {
-    background: #37352f14;
-  }
-  .edit-name:hover {
-    background: #37352f0f;
+    background: rgba(47, 107, 255, 0.22);
+    color: var(--ma-accent);
+    box-shadow: var(--ma-shadow-glow);
   }
   .confirm-btn:hover {
-    opacity: .85;
+    transform: translateY(-1px);
+    box-shadow: var(--ma-shadow-glow);
   }
   .cancel-btn:hover {
-    background: #37352f14;
+    background: rgba(47, 107, 255, 0.18);
+    color: var(--ma-accent);
+    box-shadow: var(--ma-shadow-glow);
   }
 }
 </style>

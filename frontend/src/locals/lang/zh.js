@@ -32,8 +32,8 @@ export default {
     },
   },
   auth: {
-    loginToLemonAI: "登录 LemonAI",
-    registerLemonAIAccount: "注册 LemonAI 账户",
+    loginToLemonAI: "登录 Mighty Agent",
+    registerLemonAIAccount: "注册 Mighty Agent 账户",
     verifyEmail: "验证邮箱",
     resetPassword: "重置密码",
     loginWithGoogle: "使用 Google 登录",
@@ -251,7 +251,7 @@ export default {
     }
   },
   //主界面
-  lemon: {
+  lemonAI: {
     // 首页
     welcome: {
       greeting: "你好",
@@ -400,9 +400,9 @@ export default {
       saveToGoogleDrivePending: "保存到Google Drive功能待实现。"
     },
     preview: {
-      title: "Lemon的电脑",
+      title: "Mighty Agent的电脑",
       openVsCode: "VS Code",
-      using: "Lemon 正在使用",
+      using: "Mighty Agent 正在使用",
       performing: "正在执行",
       previousStep: "上一步",
       nextStep: "下一步",
@@ -555,7 +555,7 @@ export default {
         OpenRouter: "OpenRouter",
         LMStudio: "LM Studio",
         Cloudsway: "Cloudsway",
-        Lemon: "Lemon",
+        lemonAI: "Mighty Agent",
 
       },
       showMoreOptions: " 更多选项",
@@ -757,7 +757,7 @@ export default {
     },
     about: {
       title: "关于",
-      lemonAI: "LemonAI",
+      lemonAI: "Mighty Agent",
       checkUpdate: "检查更新",
       officialWebsite: "官方网站",
       view: "查看",

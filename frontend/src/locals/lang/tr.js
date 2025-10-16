@@ -1,8 +1,8 @@
 export default {
   // Giriş Arayüzü
   auth: {
-    loginToLemonAI: "LemonAI'a Giriş Yap",
-    registerLemonAIAccount: "LemonAI Hesabı Kaydol",
+    loginToLemonAI: "Mighty Agent'a Giriş Yap",
+    registerLemonAIAccount: "Mighty Agent Hesabı Kaydol",
     verifyEmail: "E-posta Doğrulama",
     resetPassword: "Şifre Sıfırlama",
     loginWithGoogle: "Google ile Giriş Yap",
@@ -53,7 +53,7 @@ export default {
     verifyingGoogleLogin: "Google ile giriş doğrulanıyor"
   },
   // Ana Arayüz
-  lemon: {
+  lemonAI: {
     // Ana Sayfa
     welcome: {
       greeting: "Merhaba",
@@ -173,9 +173,9 @@ export default {
       saveToGoogleDrivePending: "Google Drive'a kaydetme özelliği geliştirme aşamasında."
     },
     preview: {
-      title: "Lemon'un Bilgisayarı",
+      title: "Mighty Agent'un Bilgisayarı",
       openVsCode: "VS Code",
-      using: "Lemon kullanıyor",
+      using: "Mighty Agent kullanıyor",
       performing: "Yürütülüyor",
       previousStep: "Önceki adım",
       nextStep: "Sonraki adım",

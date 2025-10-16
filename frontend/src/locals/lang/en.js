@@ -32,8 +32,8 @@ export default {
     },
   },
   auth: {
-    loginToLemonAI: "Login to LemonAI",
-    registerLemonAIAccount: "Register LemonAI Account",
+    loginToLemonAI: "Login to Mighty Agent",
+    registerLemonAIAccount: "Register Mighty Agent Account",
     verifyEmail: "Verify Email",
     resetPassword: "Reset Password",
     loginWithGoogle: "Login with Google",
@@ -399,9 +399,9 @@ export default {
       saveToGoogleDrivePending: "Save to Google Drive feature is under development."
     },
     preview: {
-      title: "Lemon's computer",
+      title: "Mighty Agent's computer",
       openVsCode: "VS Code",
-      using: "Lemon is using",
+      using: "Mighty Agent is using",
       performing: "Performing",
       previousStep: "Previous step",
       nextStep: "Next step",
@@ -554,7 +554,7 @@ export default {
         OpenRouter: "OpenRouter",
         LMStudio: "LM Studio",
         Cloudsway: "Cloudsway",
-        Lemon: "Lemon",
+        Lemon: "Mighty Agent",
 
       },
       showMoreOptions: "Show more options",
@@ -754,7 +754,7 @@ export default {
     },
     about: {
       title: "About",
-      lemonAI: "LemonAI",
+      lemonAI: "Mighty Agent",
       checkUpdate: "Check update",
       officialWebsite: "Official website",
       view: "View",

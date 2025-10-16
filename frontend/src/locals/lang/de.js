@@ -1,8 +1,8 @@
 export default {
   //登录界面
   auth: {
-    loginToLemonAI: "Bei LemonAI anmelden",
-    registerLemonAIAccount: "LemonAI-Konto registrieren",
+    loginToLemonAI: "Bei Mighty Agent anmelden",
+    registerLemonAIAccount: "Mighty Agent-Konto registrieren",
     verifyEmail: "E-Mail verifizieren",
     resetPassword: "Passwort zurücksetzen",
     loginWithGoogle: "Mit Google anmelden",
@@ -173,9 +173,9 @@ export default {
       saveToGoogleDrivePending: "Speichern auf Google Drive-Funktion noch nicht implementiert."
     },
     preview: {
-      title: "Lemons Computer",
+      title: "Computer von Mighty Agent",
       openVsCode: "VS Code",
-      using: "Lemon benutzt",
+      using: "Mighty Agent benutzt",
       performing: "Führt aus",
       previousStep: "Vorheriger Schritt",
       nextStep: "Nächster Schritt",

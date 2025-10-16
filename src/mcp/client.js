@@ -66,7 +66,7 @@ class McpClient {
     const initPromise = (async () => {
       try {
         const { Client } = await import("@modelcontextprotocol/sdk/client/index.js");
-        const client = new Client({ name: 'LemonAI MCP Client', version: '1.0.0' }, { capabilities: {} });
+        const client = new Client({ name: 'Mighty Agent MCP Client', version: '1.0.0' }, { capabilities: {} });
 
         try {
           const transport = await initTransport(server);

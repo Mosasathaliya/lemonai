@@ -164,22 +164,22 @@ const dataUpdate = async () => {
     await Model.bulkCreate(modelsData);
   }
   // v0.1.2 => v0.1.3
-  const platform_lemon = await Platform.findOne({ where: { name: 'Lemon' } })
-  if (!platform_lemon) {
-    const lemonPlatform = defaultData.find(item => item.name === 'Lemon')
+  const platform_mighty = await Platform.findOne({ where: { name: 'Mighty Agent' } })
+  if (!platform_mighty) {
+    const mightyPlatform = defaultData.find(item => item.name === 'Mighty Agent')
     const platformData = {
-      name: lemonPlatform.name,
-      logo_url: lemonPlatform.logo_url,
+      name: mightyPlatform.name,
+      logo_url: mightyPlatform.logo_url,
       source_type: 'system',
-      api_key: lemonPlatform.api_key,
-      api_url: lemonPlatform.api_url,
-      api_version: lemonPlatform.api_version,
-      key_obtain_url: lemonPlatform.key_obtain_url,
+      api_key: mightyPlatform.api_key,
+      api_url: mightyPlatform.api_url,
+      api_version: mightyPlatform.api_version,
+      key_obtain_url: mightyPlatform.key_obtain_url,
       is_subscribe: true,
       is_enabled: true
     };
     const platform = await Platform.create(platformData);
-    const modelsData = lemonPlatform.models.map(model => ({
+    const modelsData = mightyPlatform.models.map(model => ({
       // @ts-ignore
       platform_id: platform.id,
       logo_url: model.logo_url,
@@ -191,8 +191,40 @@ const dataUpdate = async () => {
     await Model.bulkCreate(modelsData);
   }
 
+  // v0.1.3 => v0.1.4 (Cloudflare Workers AI)
+  const cloudflarePlatform = await Platform.findOne({ where: { name: 'Cloudflare Workers AI' } })
+  if (!cloudflarePlatform) {
+    const cloudflareData = defaultData.find(item => item.name === 'Cloudflare Workers AI')
+    if (cloudflareData) {
+      const platformData = {
+        name: cloudflareData.name,
+        logo_url: cloudflareData.logo_url,
+        source_type: 'system',
+        api_key: cloudflareData.api_key,
+        api_url: cloudflareData.api_url,
+        api_version: cloudflareData.api_version,
+        key_obtain_url: cloudflareData.key_obtain_url,
+        is_enabled: cloudflareData.is_enabled,
+        activate_time: cloudflareData.activate_time,
+        provider_type: cloudflareData.provider_type,
+        user_id: cloudflareData.user_id
+      };
+      const platform = await Platform.create(platformData);
+      const modelsData = cloudflareData.models.map(model => ({
+        // @ts-ignore
+        platform_id: platform.id,
+        logo_url: model.logo_url,
+        model_id: model.model_id,
+        model_name: model.model_name,
+        group_name: model.group_name,
+        model_types: model.model_types,
+      }));
+      await Model.bulkCreate(modelsData);
+    }
+  }
+
   // v0.1.3 => v0.1.4
-  await Platform.update({ is_enabled: true }, { where: { name: 'Lemon' } })
+  await Platform.update({ is_enabled: true }, { where: { name: 'Mighty Agent' } })
   SearchProviderTable.destroy({ where: { name: 'Baidu' } });
   SearchProviderTable.destroy({ where: { name: 'Bing' } });
 }

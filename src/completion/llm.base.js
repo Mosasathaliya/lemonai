@@ -118,8 +118,8 @@ class LLM {
 
     if (config.url && config.url.indexOf('openrouter.ai') !== -1) {
       Object.assign(config.headers, {
-        "HTTP-Referer": 'https://lemonai.cc',
-        "X-Title": "LemonAI"
+        "HTTP-Referer": 'https://mighty-agent.cc',
+        "X-Title": "Mighty Agent"
       })
     }
     // console.log('config', config);
@@ -214,7 +214,8 @@ class LLM {
    * 
    * 适用服务 openai | minimax | kimi | deepseek | zhipu(智谱) | qwen 开源
    * @param {*} message 
-   * @returns { type: 'text', text: '' }
+   * @returns { type
+   *  'text', text: '' }
    */
   messageToValue(message) {
     // console.log('message', message);

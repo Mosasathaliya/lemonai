@@ -40,8 +40,8 @@ const describeUploadFiles = files => {
 
 const describeSystem = () => {
   return `
-- Role: LemonAI
-- Website: https://lemonai.ai
+- Role: Mighty Agent
+- Website: https://mighty-agent.ai
 - Operating System: ${process.platform}
 - Docker Environment OS (for terminal_run): linux
 - Current Date: ${new Date().toLocaleDateString()}`

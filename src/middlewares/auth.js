@@ -11,8 +11,7 @@ const excludePatterns = [
 
 module.exports = () => {
   return async (ctx, next) => {
-
-    // 直接设置默认用户 ID 为 1，不进行 Token 校验
+    // NO AUTH - Testing mode
     ctx.state.user = { id: 1 };
     await next();
   };

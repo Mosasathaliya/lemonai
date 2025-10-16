@@ -1,6 +1,6 @@
 require('dotenv').config()
 const axios = require('axios')
-const SUB_SERVER_DOMAIN = process.env.SUB_SERVER_DOMAIN || 'https://app.lemonai.ai';
+const SUB_SERVER_DOMAIN = process.env.SUB_SERVER_DOMAIN || 'https://app.mighty-agent.ai';
 async function forwardRequest(ctx, method, path) {
   const url = `${SUB_SERVER_DOMAIN}${path}`;
   const config = {
@@ -18,7 +18,8 @@ async function forwardRequest(ctx, method, path) {
     config.data = ctx.request.body; // POST、PUT 等通过 body 传参
   }
 
-  const result = await axios.request(config);
+  const result = await axios.
+  (config);
   return result.data;
 }
 

@@ -1,69 +1,81 @@
-# Start from the Node.js 22 slim image
-FROM node:22-slim
+FROM node:20-alpine
 
-# Set the working directory in the container
 WORKDIR /app
 
-# --- Layer 1: System Dependencies (Least Frequent Change) ---
-# Switch to root user to install packages
-USER root
-RUN apt-get update && \
-    apt-get upgrade -y && \
-    apt-get install -y --no-install-recommends \
-    wget curl sudo apt-utils git jq tmux bash curl ca-certificates file make \
-    libgl1-mesa-glx \
-    libasound2-plugins libatomic1 && \
-    # Remove packages with CVEs and no updates yet, if present
-    (apt-get remove -y libaom3 || true) && \
-    (apt-get remove -y libjxl0.7 || true) && \
-    (apt-get remove -y libopenexr-3-1-30 || true) && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+# Install system dependencies
+RUN apk add --no-cache python3 make g++ git curl bash
 
-# --- Layer 2: Package Manager Manifests (Infrequent Change) ---
-# Copy package.json and Makefile. If you have a lock file (package-lock.json or yarn.lock),
-# copy it here as well. This is crucial for caching dependency installation.
-COPY ./package.json ./
-RUN npm install --production
+# Install pnpm
+RUN npm install -g pnpm
 
-# COPY ./package-lock.json ./  # Or yarn.lock - uncomment and use if you have one!
-COPY ./Makefile ./
+# Copy package files
+COPY package.json pnpm-lock.yaml Makefile ./
+COPY frontend/package.json frontend/pnpm-lock.yaml ./frontend/
 
-# --- Layer 3: Install Project Dependencies (Changes when manifests change) ---
-# This runs 'npm install' or similar based on your Makefile's 'init' target.
-# This layer will be cached as long as package.json, lock file, and Makefile haven't changed.
+# Install dependencies
+RUN pnpm install --frozen-lockfile
+RUN cd frontend && pnpm install --frozen-lockfile
+
+# Copy frontend and build
 COPY ./frontend ./frontend
-RUN cd frontend && npm install
+RUN cd frontend && VITE_IS_CLIENT=true pnpm run build && rm -rf node_modules
 
-# --- Layer 4: Playwright Installation (Changes if Playwright version in package.json changes or make init changes) ---
-# Installs Playwright browsers and their OS dependencies.
-# Using --with-deps is generally more efficient and ensures OS dependencies are met.
-# RUN npx playwright install --with-deps
+# Install Playwright
 RUN npx playwright install
 RUN npx playwright install-deps
 
-# --- Layer 5: Create static directories (Very infrequent change) ---
-# This is a lightweight operation.
-RUN mkdir workspace
+# Create workspace directory
+RUN mkdir -p workspace
 
-# --- Layer 6: Application Code (Most Frequent Change) ---
-# Copy your application code last, as this is what changes most often.
+# Copy application code
 COPY ./public ./public
 COPY ./bin ./bin
 COPY ./src ./src
 COPY ./types ./types
+
+# Initialize database tables
 RUN make init-tables
 
-# At this point, the image is built with root permissions for the build steps.
-# For running the application, you might want to switch to a non-root user.
-# e.g., USER node (the default user for the 'node' image)
-# USER node
+# Set environment variables
+ENV NODE_ENV=production
+ENV PORT=3000
+ENV LEMON_AI_PATH=/app
+ENV CF_AI_MODEL=@cf/openai/gpt-oss-20b
+ENV CF_AURA_MODEL=@cf/deepgram/aura-1
+ENV CF_BART_MODEL=@cf/facebook/bart-large-cnn
+ENV CF_BGE_MODEL=@cf/baai/bge-base-en-v1.5
+ENV CF_BGE_SMALL_MODEL=@cf/baai/bge-small-en-v1.5
+ENV CF_BGE_LARGE_MODEL=@cf/baai/bge-large-en-v1.5
+ENV CF_EMBEDDING_GEMMA_MODEL=@cf/google/embeddinggemma-300m
+ENV CF_BGE_M3_MODEL=@cf/baai/bge-m3
+ENV CF_BGE_RERANKER_MODEL=@cf/baai/bge-reranker-base
+ENV CF_DEEPSEEK_CODER_MODEL=@hf/thebloke/deepseek-coder-6.7b-base-awq
+ENV CF_DEEPSEEK_CODER_INSTRUCT_MODEL=@hf/thebloke/deepseek-coder-6.7b-instruct-awq
+ENV CF_DEEPSEEK_MATH_MODEL=@cf/deepseek-ai/deepseek-math-7b-instruct
+ENV CF_DETR_RESNET_MODEL=@cf/facebook/detr-resnet-50
+ENV CF_FALCON_MODEL=@cf/tiiuae/falcon-7b-instruct
+ENV CF_DREAMSHAPER_MODEL=@cf/lykon/dreamshaper-8-lcm
+ENV CF_GEMMA_MODEL=@cf/google/gemma-3-12b-it
+ENV CF_GEMMA_7B_MODEL=@hf/google/gemma-7b-it
+ENV CF_DISTILBERT_MODEL=@cf/huggingface/distilbert-sst-2-int8
+ENV CF_GEMMA_7B_LORA_MODEL=@cf/google/gemma-7b-it-lora
+ENV CF_GEMMA_SEA_LION_MODEL=@cf/aisingapore/gemma-sea-lion-v4-27b-it
+ENV CF_FLUX_MODEL=@cf/deepgram/flux
+ENV CF_GPT_OSS_20B_MODEL=@cf/openai/gpt-oss-20b
+ENV CF_QWEN_0_5B_MODEL=@cf/qwen/qwen1.5-0.5b-chat
+ENV CF_QWEN_1_8B_MODEL=@cf/qwen/qwen1.5-1.8b-chat
+ENV CF_QWEN_7B_MODEL=@cf/qwen/qwen1.5-7b-chat-awq
+ENV CF_QWEN_14B_MODEL=@cf/qwen/qwen1.5-14b-chat-awq
+ENV CF_QWEN_CODER_MODEL=@cf/qwen/qwen2.5-coder-32b-instruct
+ENV CF_QWQ_MODEL=@cf/qwen/qwq-32b
+ENV CF_FLUX_SCHNELL_MODEL=@cf/black-forest-labs/flux-1-schnell
+ENV CF_SDXL_BASE_MODEL=@cf/stabilityai/stable-diffusion-xl-base-1.0
+ENV CF_SDXL_LIGHTNING_MODEL=@cf/bytedance/stable-diffusion-xl-lightning
+ENV CF_SD15_IMG2IMG_MODEL=@cf/runwayml/stable-diffusion-v1-5-img2img
+ENV CF_SD15_INPAINT_MODEL=@cf/runwayml/stable-diffusion-v1-5-inpainting
+ENV CF_LUCID_ORIGIN_MODEL=@cf/leonardo/lucid-origin
+ENV CF_PHOENIX_MODEL=@cf/leonardo/phoenix-1.0
 
-# Your original Dockerfile had 'USER root' quite late.
-# It's needed for 'apt-get'. If 'make init' or 'npx playwright install'
-# also require root, then keeping USER root as set above is fine for the build process.
+EXPOSE 3000
 
-# The 'ls' and 'pwd' commands were likely for debugging and are removed from the optimized version.
-
-# Define CMD or ENTRYPOINT below to run your application
-# Example: CMD ["node", "src/index.js"]
+CMD ["pnpm", "start"]

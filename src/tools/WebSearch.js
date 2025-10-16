@@ -86,8 +86,8 @@ const WebSearchTool = {
                     json = obj.json
                     content = obj.content
                     break;
-                case 'Lemon':
-                    obj = await doLemonSearch(query, num_results, conversation_id)
+                case 'Mighty Agent':
+                    obj = await doMightyAgentSearch(query, num_results, conversation_id)
                     json = obj.json
                     content = obj.content
                     break;
@@ -120,7 +120,7 @@ async function doTalivySearch(query, num_results) {
     return { json, content }
 }
 
-async function doLemonSearch(query, num_results, conversation_id) {
+async function doMightyAgentSearch(query, num_results, conversation_id) {
     return sub_server_request('/api/sub_server/search', {
         query,
         num_results,

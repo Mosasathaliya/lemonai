@@ -40,8 +40,8 @@
 
         <!-- Footer Social Links -->
         <div class="footer-social">
-          <a-tooltip title="Homepage">
-            <a href="https://www.lemonai.ai" target="_blank" rel="noopener noreferrer" class="footer-social-link">
+          <a-tooltip v-if="links.home" title="Homepage">
+            <a :href="links.home" target="_blank" rel="noopener noreferrer" class="footer-social-link">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="footer-social-icon" xmlns="http://www.w3.org/2000/svg">
                 <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
                 <polyline points="9,22 9,12 15,12 15,22"></polyline>
@@ -49,8 +49,8 @@
             </a>
           </a-tooltip>
           
-          <a-tooltip title="Email">
-            <a href="mailto:hello@lemonai.ai" target="_blank" rel="noopener noreferrer" class="footer-social-link">
+          <a-tooltip v-if="links.contactEmail" title="Email">
+            <a :href="links.contactEmail" target="_blank" rel="noopener noreferrer" class="footer-social-link">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="footer-social-icon" xmlns="http://www.w3.org/2000/svg">
                 <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
                 <polyline points="22,6 12,13 2,6"></polyline>
@@ -68,8 +68,8 @@
 
          
 
-          <a-tooltip title="Documentation">
-            <a href="https://lemon-11.gitbook.io/lemonai" target="_blank" rel="noopener noreferrer" class="footer-social-link">
+          <a-tooltip v-if="links.docs" title="Documentation">
+            <a :href="links.docs" target="_blank" rel="noopener noreferrer" class="footer-social-link">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="footer-social-icon" xmlns="http://www.w3.org/2000/svg">
                 <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
                 <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
@@ -112,6 +112,7 @@ import emitter from '@/utils/emitter'
 import { useI18n } from 'vue-i18n'
 
 import service from '@/services/default-model-setting'
+import { brandLinks } from '@/config/brand'
 
 const router = useRouter()
 const chatStore = useChatStore()
@@ -119,6 +120,7 @@ const userStore = useUserStore()
 const { agent, mode } = storeToRefs(chatStore)
 const { user, membership } = storeToRefs(userStore)
 
+const links = brandLinks
 
 const { t } = useI18n()
 import { driver } from "driver.js";
@@ -245,15 +247,19 @@ function changeMode(modeType) {
     emitter.emit('mobileMenuStateChange', false)
   }
   
-  router.push('/lemon')
+  router.push('/chat')
 }
 
 function toStore() {
+  if (!links.store) {
+    console.warn("[brand] Store link is not configured")
+    return
+  }
   if (isMobile.value && isShowMenu.value) {
     isShowMenu.value = false
     emitter.emit('mobileMenuStateChange', false)
   }
-  window.open('https://app.lemonai.ai/store', '_blank')
+  window.open(links.store, '_blank')
 }
 
 function closeMenu() {
@@ -289,8 +295,11 @@ const versionInfo = ref({
 })
 
 const handleVersionClick = () => {
-  //https://lemon-11.gitbook.io/lemonai/version-update
-  window.open('https://lemon-11.gitbook.io/lemonai/version-update', '_blank')
+  if (!links.updates) {
+    console.warn("[brand] Update link is not configured")
+    return
+  }
+  window.open(links.updates, '_blank')
 }
 </script>
 
@@ -301,11 +310,12 @@ const handleVersionClick = () => {
   height: 100vh;
   width: 100%;
   z-index: 1000;
-  background-color: rgba(0, 0, 0, 0.5);
+  background: rgba(4, 9, 24, 0.55);
+  backdrop-filter: blur(18px);
   transition: opacity 2s ease;
 
   @media (min-width: 769px) {
-    background-color: transparent;
+    background: transparent;
     width: auto;
   }
 
@@ -316,7 +326,8 @@ const handleVersionClick = () => {
     bottom: 0;
     width: 80%;
     max-width: 320px;
-    background-color: transparent;
+    background: rgba(4, 9, 24, 0.85);
+    backdrop-filter: blur(24px);
     z-index: 1000;
     
     .menu-panel {
@@ -334,11 +345,14 @@ const handleVersionClick = () => {
 .menu-panel {
   width: 248px;
   height: 100%;
-  background-color: #f2f2f2;
+  background: linear-gradient(190deg, rgba(16, 33, 71, 0.92) 0%, rgba(12, 24, 54, 0.94) 45%, rgba(6, 12, 33, 0.95) 100%);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   position: relative;
+  border-right: 1px solid var(--ma-border);
+  box-shadow: var(--ma-shadow-soft);
+  color: var(--ma-text-primary);
 
   @media (max-width: 768px) {
     width: 80%;
@@ -353,63 +367,94 @@ const handleVersionClick = () => {
 }
 
 .menu-header {
-  padding: 8px;
+  padding: 18px 12px 12px;
   display: flex;
   justify-content: center;
   align-items: center;
+  width: 100%;
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 12px;
+    right: 12px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent 0%, rgba(45, 108, 255, 0.35) 50%, transparent 100%);
+  }
 }
 
 .menu-actions {
   width: 100%;
-  padding: 12px;
+  padding: 16px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
 
   .menu-button {
     display: flex;
     align-items: center;
-    gap: 6px;
-    padding: 6px 10px;
+    gap: 8px;
+    padding: 10px 12px;
     font-size: 14px;
     cursor: pointer;
-    border-radius: 10px;
-    transition: background-color 0.2s;
+    border-radius: 12px;
+    transition: all 0.2s ease;
+    background: rgba(22, 39, 82, 0.55);
+    border: 1px solid transparent;
+    color: var(--ma-text-primary);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.02);
 
     &:hover {
-      background-color: #eaeaea;
+      background: linear-gradient(135deg, rgba(47, 107, 255, 0.85) 0%, rgba(138, 43, 255, 0.7) 55%, rgba(29, 214, 255, 0.8) 100%);
+      border-color: var(--ma-border-strong);
+      transform: translateY(-1px);
+      box-shadow: var(--ma-shadow-glow);
     }
 
     &:active {
-      background-color: #dcdcdc;
+      transform: translateY(0);
+      background: linear-gradient(135deg, rgba(27, 69, 255, 0.95) 0%, rgba(138, 43, 255, 0.85) 100%);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+    }
+
+    &.store-button.active {
+      background: linear-gradient(135deg, var(--ma-primary-strong) 0%, var(--ma-secondary) 60%, var(--ma-accent) 100%);
+      border-color: var(--ma-border-strong);
+      box-shadow: var(--ma-shadow-glow);
     }
 
     .truncate {
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
+      color: currentColor;
     }
   }
 }
 
 .menu-bottom {
-  padding: 12px;
+  padding: 16px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 14px;
   position: relative;
+  background: linear-gradient(180deg, rgba(15, 29, 58, 0.9) 0%, rgba(8, 16, 36, 0.92) 100%);
+  border-top: 1px solid rgba(76, 118, 208, 0.18);
 }
 
 .user-profile-container {
   position: relative;
-  padding-top: 10px;
+  padding-top: 6px;
 }
 
 .user-info-bar {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   cursor: pointer;
+  color: var(--ma-text-primary);
 
   .user-info-text {
     display: flex;
@@ -417,11 +462,12 @@ const handleVersionClick = () => {
     font-size: 12px;
 
     .user-name {
-      font-weight: bold;
+      font-weight: 600;
+      color: var(--ma-text-primary);
     }
 
     .user-plan {
-      color: #999;
+      color: var(--ma-text-secondary);
     }
   }
 }
@@ -431,13 +477,12 @@ const handleVersionClick = () => {
   bottom: 100%;
   left: 0;
   width: 298px;
-  padding: 10px 16px;
+  padding: 12px 18px;
   font-size: 12px;
-  background: #fff;
-  border-radius: 6px;
-  box-shadow:
-    0 4px 12px rgba(0, 0, 0, 0.08),
-    0 8px 24px rgba(0, 0, 0, 0.04);
+  background: var(--ma-surface-elevated);
+  border-radius: 12px;
+  box-shadow: var(--ma-shadow-soft);
+  border: 1px solid var(--ma-border);
   z-index: 1000000;
   
   &::before {
@@ -446,28 +491,34 @@ const handleVersionClick = () => {
     top: 100%;
     left: 0;
     right: 0;
-    height: 10px;
+    height: 12px;
     background: transparent;
   }
 }
 
 .version-text {
   font-size: 11px;
-  color: #999;
+  color: var(--ma-text-secondary);
   cursor: pointer;
-  padding: 4px 8px;
-  border-radius: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
   transition: all 0.2s ease;
   user-select: none;
+  align-self: flex-end;
+  background: rgba(18, 34, 74, 0.6);
+  border: 1px solid transparent;
   
   &:hover {
-    color: #000;
-    background-color: #e5e5e5;
+    color: var(--ma-text-primary);
+    background: rgba(47, 107, 255, 0.25);
+    border-color: rgba(47, 107, 255, 0.4);
     transform: translateY(-1px);
+    box-shadow: var(--ma-shadow-glow);
   }
   
   &:active {
     transform: translateY(0);
+    box-shadow: none;
   }
 }
 
@@ -478,9 +529,9 @@ const handleVersionClick = () => {
 .footer-social {
   display: flex;
   justify-content: space-between;
-  gap: 4px;
-  border-top: 1px solid #e5e5e5;
-  padding-top: 8px;
+  gap: 6px;
+  border-top: 1px solid rgba(76, 118, 208, 0.22);
+  padding-top: 10px;
 }
 
 .footer-social-link {
@@ -489,20 +540,24 @@ const handleVersionClick = () => {
   justify-content: center;
   width: 32px;
   height: 32px;
-  color: #666;
+  color: var(--ma-text-secondary);
   text-decoration: none;
-  border-radius: 6px;
+  border-radius: 10px;
   transition: all 0.2s ease;
   cursor: pointer;
+  background: rgba(22, 39, 82, 0.35);
+  border: 1px solid rgba(76, 118, 208, 0.18);
 
   &:hover {
-    background-color: #eaeaea;
-    color: #333;
+    background: rgba(47, 107, 255, 0.24);
+    color: var(--ma-accent);
     transform: translateY(-1px);
+    box-shadow: var(--ma-shadow-glow);
   }
 
   &:active {
     transform: translateY(0);
+    box-shadow: none;
   }
 }
 

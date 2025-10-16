@@ -1,0 +1,1 @@
+This folder contains the built output assets for the worker "mighty-agent-containers" generated at 2025-10-10T19:24:12.455Z.

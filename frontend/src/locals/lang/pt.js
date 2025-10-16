@@ -1,8 +1,8 @@
 export default {
   // Interface de Login
   auth: {
-    loginToLemonAI: "Entrar no LemonAI",
-    registerLemonAIAccount: "Registrar uma conta LemonAI",
+    loginToLemonAI: "Entrar no Mighty Agent",
+    registerLemonAIAccount: "Registrar uma conta Mighty Agent",
     verifyEmail: "Verificar e-mail",
     resetPassword: "Redefinir senha",
     loginWithGoogle: "Entrar com Google",
@@ -53,7 +53,7 @@ export default {
     verifyingGoogleLogin: "Verificando login com Google"
   },
   // Interface Principal
-  lemon: {
+  lemonAI: {
     // Página Inicial
     welcome: {
       greeting: "Olá",
@@ -173,9 +173,9 @@ export default {
       saveToGoogleDrivePending: "Funcionalidade de salvar no Google Drive em desenvolvimento."
     },
     preview: {
-      title: "Computador do Lemon",
+      title: "Computador do Mighty Agent",
       openVsCode: "VS Code",
-      using: "Lemon está usando",
+      using: "Mighty Agent está usando",
       performing: "Executando",
       previousStep: "Etapa anterior",
       nextStep: "Próxima etapa",

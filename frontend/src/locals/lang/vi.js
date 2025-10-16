@@ -1,7 +1,7 @@
 export default {
   auth: {
-    loginToLemonAI: "Đăng nhập vào LemonAI",
-    registerLemonAIAccount: "Đăng ký tài khoản LemonAI",
+    loginToLemonAI: "Đăng nhập vào Mighty Agent",
+    registerLemonAIAccount: "Đăng ký tài khoản Mighty Agent",
     verifyEmail: "Xác minh email",
     resetPassword: "Đặt lại mật khẩu",
     loginWithGoogle: "Đăng nhập bằng Google",

@@ -3,8 +3,8 @@
     <div class="auth-content">
       <!-- Logo -->
       <div class="logo-container">
-        <div class="logo">
-          <img :src="logo" alt="logo" />
+        <div class="logo neon-glow">
+          <img src="/img/mighty-agent-logo.svg" alt="Mighty Agent" />
         </div>
       </div>
       <!-- Title -->
@@ -52,7 +52,6 @@
 
 <script setup>
 import { ref, reactive, computed, onMounted } from 'vue';
-import logo from '@/assets/image/lemon.jpg';
 import google from '@/assets/svg/google.svg';
 
 // import apple from '@/assets/svg/apple.svg';
@@ -184,7 +183,7 @@ const handleLogin = async (values) => {
     console.log('res', res);
     if (res.code === 200) {
       message.success(t('auth.loginSuccessful'));
-      router.push({ name: 'lemon' });
+      router.push({ name: 'chat' });
     } else {
       message.error(res.message);
     }
@@ -201,7 +200,7 @@ const handleLoginSMSCode = async (values) => {
   const res = await auth.loginSMSCode(values.phone, values.smsCode);
   if (res.code === 200) {
     message.success(t('auth.loginSuccessful'));
-    router.push({ name: 'lemon' });
+    router.push({ name: 'chat' });
   }else{
     message.error(res.message);
     return;
@@ -626,4 +625,83 @@ const handleAppleRegister = async () => {
     }
   }
 }
+/* Mighty Agent theming overrides */
+.auth-container {
+    background: var(--ma-app-background);
+    padding: 24px;
+}
+
+.auth-container .auth-content {
+    border-radius: 24px;
+    background: linear-gradient(182deg, rgba(16, 33, 71, 0.92) 0%, rgba(8, 17, 37, 0.94) 100%);
+    border: 1px solid rgba(76, 118, 208, 0.25);
+    box-shadow:
+        0 24px 60px rgba(6, 12, 29, 0.55),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+    color: var(--ma-text-primary);
+}
+
+.auth-container .auth-title {
+    color: var(--ma-text-primary);
+    text-shadow: 0 10px 28px rgba(6, 136, 255, 0.3);
+}
+
+.logo img { width: 88px; height: 88px; object-fit: contain; }
+.neon-glow { filter: drop-shadow(0 0 14px rgba(57,195,255,.45)); }
+
+.auth-container .social-button {
+    background: rgba(20, 42, 88, 0.55);
+    border: 1px solid rgba(76, 118, 208, 0.25);
+    color: var(--ma-text-primary);
+}
+
+.auth-container .social-button.google {
+    border-color: rgba(76, 118, 208, 0.35);
+    background: rgba(22, 39, 82, 0.6);
+    box-shadow: var(--ma-shadow-soft);
+}
+
+.auth-container :deep(.ant-form-item-label > label),
+.auth-container .form-label {
+    color: var(--ma-text-secondary);
+}
+
+.auth-container .auth-footer {
+    color: var(--ma-text-muted);
+}
+
+.auth-container :deep(.ant-input),
+.auth-container :deep(.ant-input-affix-wrapper) {
+    background: rgba(14, 28, 62, 0.65) !important;
+    border-color: rgba(76, 118, 208, 0.35) !important;
+    color: var(--ma-text-primary) !important;
+}
+
+.auth-container :deep(.ant-input-affix-wrapper:hover),
+.auth-container :deep(.ant-input-affix-wrapper-focused),
+.auth-container :deep(.ant-input:focus) {
+    border-color: rgba(47, 107, 255, 0.65) !important;
+    box-shadow: var(--ma-shadow-glow) !important;
+}
+
+.auth-container :deep(.ant-btn) {
+    background: linear-gradient(135deg, var(--ma-primary-strong) 0%, var(--ma-secondary) 70%, var(--ma-accent) 100%) !important;
+    border-color: transparent !important;
+    color: var(--ma-text-primary) !important;
+    box-shadow: var(--ma-shadow-glow);
+}
+
+.auth-container :deep(.ant-btn:hover) {
+    transform: translateY(-1px);
+    box-shadow: 0 18px 40px rgba(32, 210, 255, 0.25) !important;
+}
+
+.auth-container :deep(.ant-btn[disabled]) {
+    background: rgba(22, 39, 82, 0.45) !important;
+    border-color: rgba(76, 118, 208, 0.25) !important;
+    color: var(--ma-text-muted) !important;
+    box-shadow: none !important;
+}
 </style>
+
+

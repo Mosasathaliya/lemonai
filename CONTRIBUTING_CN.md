@@ -4,13 +4,13 @@ icon: file-lines
 
 # CONTRIBUTING\_CN
 
-非常感谢你考虑为 Lemon 做出贡献！作为一家资源有限的创业公司，社区的每一份贡献对我们来说都弥足珍贵。
+非常感谢你考虑为 Mighty Agent 做出贡献！作为一家资源有限的创业公司，社区的每一份贡献对我们来说都弥足珍贵。
 
 我们需要保持敏捷和快速迭代，同时也希望确保贡献者能获得尽可能流畅的参与体验。这份贡献指南旨在帮助你熟悉代码库和我们的工作方式，让你可以尽快进入有趣的开发环节。
 
-本指南和 Lemon 一样在不断完善中。如果有任何滞后于项目实际情况的地方，恳请谅解，我们也欢迎任何改进建议。
+本指南和 Mighty Agent 一样在不断完善中。如果有任何滞后于项目实际情况的地方，恳请谅解，我们也欢迎任何改进建议。
 
-关于许可证，请花一分钟阅读我们简短的许可和贡献者协议。社区同时也遵循[行为准则](https://github.com/hexdocom/lemon/blob/main/CODE_OF_CONDUCT.md)。
+关于许可证，请花一分钟阅读我们简短的许可和贡献者协议。社区同时也遵循[行为准则](https://github.com/hexdocom/Mighty Agent/blob/main/CODE_OF_CONDUCT.md)。
 
 加入我们，一起贡献，共同打造精彩项目！💡✨
 
@@ -63,11 +63,11 @@ icon: file-lines
 
 #### 前端
 
-关于前端服务的设置，请参考 `frontend/README.md` 文件中的[详细指南](https://github.com/hexdocom/lemon/blob/main/frontend/WEB_README.md)。该文档提供了帮助你正确配置前端环境的详细说明。
+关于前端服务的设置，请参考 `frontend/README.md` 文件中的[详细指南](https://github.com/hexdocom/Mighty Agent/blob/main/frontend/WEB_README.md)。该文档提供了帮助你正确配置前端环境的详细说明。
 
 #### 后端
 
-关于后端服务的设置，请参考 `API_README.md` 文件中的[详细说明](https://github.com/hexdocom/lemon/blob/main/API_README.md)。该文档包含了帮助你顺利运行后端的步骤说明。
+关于后端服务的设置，请参考 `API_README.md` 文件中的[详细说明](https://github.com/hexdocom/Mighty Agent/blob/main/API_README.md)。该文档包含了帮助你顺利运行后端的步骤说明。
 
 #### 其他注意事项
 
