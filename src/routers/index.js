@@ -30,9 +30,12 @@ const modules = [
   'recharge_product',
 ];
 
+// Add binding proxies
+const bindingsRouter = require('./bindings');
+router.use(bindingsRouter.routes()).use(bindingsRouter.allowedMethods());
+
 for (const module of modules) {
   try {
-    // console.log('module', module);
     router.use(require(`./${module}/index.js`));
   } catch (error) {
     console.log(`load ${module} error`, error);

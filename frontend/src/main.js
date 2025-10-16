@@ -4,7 +4,7 @@ import './style.scss';
 console.log('style.scss imported');
 //ant
 import Antd from 'ant-design-vue';
-import 'ant-design-vue/dist/reset.css'; // 引入重置样式
+import 'ant-design-vue/dist/reset.css';
 console.log('Antd imported');
 import App from './App.vue';
 console.log('App.vue imported');
@@ -36,4 +36,6 @@ console.log('$t global property configured');
 
 console.log('Attempting to mount app...');
 app.mount('#app');
-console.log('app.mount called'); // 注意：这一行不一定表示挂载成功，只表示方法被调用
+// Hide preloader when Vue is mounted
+try { const loader = document.getElementById('app-loader'); if (loader) loader.remove(); } catch {}
+console.log('app.mount called');

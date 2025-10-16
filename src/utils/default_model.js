@@ -7,6 +7,21 @@ const Conversation = require('@src/models/Conversation')
 
 const _defaultModelCache = {};
 
+const resolveApiConfig = (platform, model_name, type = 'assistant') => {
+  const provider = (platform.dataValues.provider_type || '').toLowerCase();
+  let base_url = platform.dataValues.api_url || '';
+  if (base_url.endsWith('/')) {
+    base_url = base_url.slice(0, -1);
+  }
+  let api_url = base_url;
+  if (provider === 'cloudflare') {
+    api_url = `${base_url}/${model_name}`;
+  } else {
+    api_url = `${base_url}/chat/completions`;
+  }
+  return { api_url, base_url };
+};
+
 const _fetchDefaultModel = async (type = 'assistant') => {
   const defaultModelSetting = await DefaultModelSetting.findOne({ where: { setting_type: type } });
   if (!defaultModelSetting) return null;
@@ -17,11 +32,7 @@ const _fetchDefaultModel = async (type = 'assistant') => {
   if (!platform) return null;
 
   const api_key = platform.dataValues.api_key;
-  const base_url = platform.dataValues.api_url
-  let api_url = platform.dataValues.api_url;
-  if (type === 'assistant') {
-    api_url = platform.dataValues.api_url + '/chat/completions';
-  }
+  const { api_url, base_url } = resolveApiConfig(platform, model_name, type);
   const platform_name = platform.dataValues.name;
 
   return { model_name, platform_name, api_key, api_url, base_url: base_url, is_subscribe: false };
@@ -36,9 +47,7 @@ const getDefaultModel = async (conversation_id) => {
   if (!platform) return null;
 
   const api_key = platform.dataValues.api_key;
-  const base_url = platform.dataValues.api_url
-  let api_url = platform.dataValues.api_url;
-  api_url = platform.dataValues.api_url + '/chat/completions';
+  const { api_url, base_url } = resolveApiConfig(platform, model_name);
   const platform_name = platform.dataValues.name;
 
   return { model_name, platform_name, api_key, api_url, base_url: base_url, is_subscribe: platform.is_subscribe };
@@ -53,9 +62,7 @@ const getCustomModel = async (model_id) => {
   if (!platform) return null;
 
   const api_key = platform.dataValues.api_key;
-  const base_url = platform.dataValues.api_url
-  let api_url = platform.dataValues.api_url;
-  api_url = platform.dataValues.api_url + '/chat/completions';
+  const { api_url, base_url } = resolveApiConfig(platform, model_name);
   const platform_name = platform.dataValues.name;
 
   return { model_name, platform_name, api_key, api_url, base_url: base_url, is_subscribe: false };

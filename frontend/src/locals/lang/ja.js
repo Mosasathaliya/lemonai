@@ -1,8 +1,8 @@
 export default {
   // ログイン画面
   auth: {
-    loginToLemonAI: "LemonAIにログイン",
-    registerLemonAIAccount: "LemonAIアカウントを登録",
+    loginToLemonAI: "Mighty Agentにログイン",
+    registerLemonAIAccount: "Mighty Agentアカウントを登録",
     verifyEmail: "メール認証",
     resetPassword: "パスワードのリセット",
     loginWithGoogle: "Googleでログイン",
@@ -53,7 +53,7 @@ export default {
     verifyingGoogleLogin: "Googleログインを認証中"
   },
   // メイン画面
-  lemon: {
+  lemonAI: {
     // ホーム
     welcome: {
       greeting: "こんにちは",
@@ -173,9 +173,9 @@ export default {
       saveToGoogleDrivePending: "Google Driveへの保存機能は準備中です。"
     },
     preview: {
-      title: "Lemonのコンピュータ",
+      title: "Mighty Agentのコンピュータ",
       openVsCode: "VS Code",
-      using: "Lemonが使用中",
+      using: "Mighty Agentが使用中",
       performing: "実行中",
       previousStep: "前のステップ",
       nextStep: "次のステップ",

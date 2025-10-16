@@ -6,6 +6,8 @@ const uuid = require("uuid");
 const { Op } = require('sequelize');
 const Conversation = require("@src/models/Conversation");
 const AgenticAgent = require("@src/agent/AgenticAgent");
+const MultiModelAgent = require("@src/agent/multi-model-agent");
+const KVMemory = require("@src/utils/kv-memory");
 const detect_intent = require("@src/agent/intent-detection");
 const chat_completion = require('@src/agent/chat-completion/index')
 const Message = require("@src/utils/message");
@@ -171,12 +173,15 @@ router.post("/run", async (ctx, next) => {
     return obj
   })
 
+  const kvMemory = new KVMemory();
+  
   const context = {
     onTokenStream,
     conversation_id,
     user_id: ctx.state.user.id,
     mcp_server_ids,
     agent_id,
+    kvMemory,
   }
 
   // 根据mode参数确定处理方式
@@ -569,7 +574,7 @@ async function runChatPhase(params, isTwinsMode) {
   let sysPromptMessage = {
     role: 'system',
     content: `
-    You are a friendly and helpful chatbot named Lemon. 
+    You are a friendly and helpful chatbot named Mighty Agent. 
     Your role is to assist users by providing concise and accurate responses to their questions or messages. 
     Politely and friendly acknowledge the user's message and provide a clear and relevant answer.
     `

@@ -17,8 +17,10 @@ const router = require("@src/routers/index");
 const wrapContext = require("@src/middlewares/wrap.context");
 const setGlobalTokenMiddleware = require('@src/middlewares/setGlobalToken');
 const authMiddleware = require('@src/middlewares/auth');
+const r2Middleware = require('@src/middlewares/r2');
 
 app.use(wrapContext);
+app.use(r2Middleware());
 // error handler 
 onerror(app)
 
@@ -34,9 +36,14 @@ app.use(async (ctx, next) => {
   await next();
 });
 const path = require('path');
+const send = require('koa-send');
 
 const publicPath = path.join(__dirname, '../public');
 app.use(require('koa-static')(publicPath))
+
+// Serve built frontend assets (Vite output)
+const frontendDistPath = path.join(__dirname, '../frontend/dist');
+app.use(require('koa-static')(frontendDistPath))
 
 // logger
 app.use(async (ctx, next) => {
@@ -64,6 +71,24 @@ app.use(koaSwagger({
 // error-handling
 app.on('error', (err, ctx) => {
   console.error('server error', err, ctx)
+});
+
+// SPA history fallback for Vue Router (createWebHistory)
+app.use(async (ctx, next) => {
+  await next();
+  if (
+    ctx.status === 404 &&
+    ctx.method === 'GET' &&
+    !ctx.path.startsWith('/api') &&
+    !ctx.path.startsWith('/swagger') &&
+    !ctx.path.startsWith('/__')
+  ) {
+    try {
+      await send(ctx, 'index.html', { root: frontendDistPath });
+    } catch (err) {
+      // ignore if index not present
+    }
+  }
 });
 
 module.exports = app

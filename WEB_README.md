@@ -23,4 +23,4 @@ VITE\_PORT=5005\
 
 
 *
-  * Description: After the front end is started, you can passhttp://localhost:5005Access the Lemon app.
+  * Description: After the front end is started, you can passhttp://localhost:5005Access the Mighty Agent app.

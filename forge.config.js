@@ -6,12 +6,11 @@ const path = require('path');
 
 module.exports = {
   packagerConfig: {
+    name: "mighty-agent",
+    executableName: "mighty-agent",
     prune: true,
     asar: true,
     icon: path.resolve(__dirname, 'frontend/src/assets/icon'),
-    // {
-    //   unpackDir: "bin" // 解压 bin 目录到 app.asar.unpacked
-    // },
     ignore: [
       /^\/node_modules\/\.bin/,
       /^\/tests/,
@@ -52,48 +51,43 @@ module.exports = {
   rebuildConfig: {},
   makers: [
     {
-      name: '@electron-forge/maker-dmg',
-      platforms: ['darwin'],
-    },
-    {
       name: '@electron-forge/maker-squirrel',
-      config: {},
+      config: {
+        name: "mighty-agent"
+      }
     },
     {
       name: '@electron-forge/maker-zip',
-      platforms: ['darwin'],
-      // platforms: ['win32'],
+      platforms: ['darwin', 'win32']
     },
     {
       name: '@electron-forge/maker-deb',
-      config: {},
+      config: {}
     },
     {
       name: '@electron-forge/maker-rpm',
-      config: {},
-    },
+      config: {}
+    }
   ],
   plugins: [
     {
       name: '@electron-forge/plugin-vite',
       config: {
-        // 主进程配置
         build: [
           {
-            entry: 'main.js', // 主进程入口（后端代码）
-            config: 'vite.main.config.js', // 主进程 Vite 配置文件
+            entry: 'main.js',
+            config: 'vite.main.config.js'
           },
           {
-            entry: 'preload.js', // 预加载脚本入口
-            config: 'vite.preload.config.js', // 预加载 Vite 配置文件
-          },
+            entry: 'preload.js',
+            config: 'vite.preload.config.js'
+          }
         ],
-        // 渲染进程配置
         renderer: [
           {
             name: 'main_window',
-            config: 'frontend/vite.config.js', // 前端 Vite 配置文件
-          },
+            config: 'frontend/vite.config.js'
+          }
         ],
       },
     },

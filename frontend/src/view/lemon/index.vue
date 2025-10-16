@@ -65,7 +65,7 @@ onUnmounted(() => {
   justify-content: center;
   width: 100%;
   height: 100vh;
-  background: #f8f8f7;
+  background: var(--ma-app-background);
   overflow-x: hidden;
 }
 
@@ -75,6 +75,8 @@ onUnmounted(() => {
   display: flex;
   overflow-y: auto;
   transition: transform 0.3s ease;
+  background: linear-gradient(160deg, rgba(16, 31, 63, 0.92) 0%, rgba(10, 17, 40, 0.85) 45%, rgba(6, 11, 25, 0.88) 100%);
+  box-shadow: inset 0 0 0 1px rgba(47, 107, 255, 0.08);
 }
 
 /* 移动端推拉式布局 */
@@ -101,7 +103,7 @@ onUnmounted(() => {
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: rgba(0, 0, 0, 0.3);
+    background: rgba(4, 7, 16, 0.65);
     z-index: 999;
     cursor: pointer;
     opacity: 0;

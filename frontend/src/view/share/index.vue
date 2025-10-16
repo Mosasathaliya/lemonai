@@ -10,10 +10,10 @@
                 </div>
                 <div class="lemon-footer">
                     <div style="display: flex;align-items: center;">
-                        <div><img style="width: 20px;height: 20px; margin-right: 5px;" src="@/assets/image/lemon.jpg" alt="" /></div>
+                        <div><img style="width: 24px;height: 24px; margin-right: 5px;" src="@/assets/svg/mighty-agent-logo.svg" alt="Mighty Agent" /></div>
                         <span style="color: #34322d;font-size: .875rem;line-height: 1.25rem;">
-                            <div v-if="playStatus!='running'">LemonAI{{ $t('task_finished') }}</div>
-                            <div v-else>LemonAI{{ $t('task_playing') }}...</div>
+                            <div v-if="playStatus!='running'">Mighty Agent{{ $t('task_finished') }}</div>
+                            <div v-else>Mighty Agent{{ $t('task_playing') }}...</div>
                         </span>
                     </div>
                     <div>
@@ -113,7 +113,8 @@ const scrollToBottom = () => {
     justify-content: center;
     width: 100%;
     height: 100vh;
-    background: #f8f8f7;
+    background: var(--ma-app-background);
+    padding: 20px;
 }
 
 .lemon-content {
@@ -121,11 +122,18 @@ const scrollToBottom = () => {
     height: 100%;
     display: flex;
     overflow-y: auto;
+    background: linear-gradient(180deg, rgba(16, 31, 63, 0.9) 0%, rgba(6, 13, 32, 0.92) 100%);
+    border-radius: 24px;
+    border: 1px solid rgba(76, 118, 208, 0.2);
+    box-shadow:
+        0 25px 60px rgba(6, 12, 29, 0.55),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+    backdrop-filter: blur(18px);
 
     .lemon-main {
         min-width: 50%;
-        padding-left: 1.25rem;
-        padding-right: 1.25rem;
+        padding-left: 1.75rem;
+        padding-right: 1.75rem;
         max-width: 100%;
         width: 100%;
         overflow: hidden;
@@ -134,6 +142,9 @@ const scrollToBottom = () => {
     .preview {
         max-width: 50%;
         min-width: 50%;
+        background: rgba(12, 24, 54, 0.65);
+        border-left: 1px solid rgba(76, 118, 208, 0.18);
+        box-shadow: inset 0 0 0 1px rgba(47, 107, 255, 0.08);
     }
 }
 
@@ -167,12 +178,15 @@ const scrollToBottom = () => {
     padding-left: 1rem;
     padding-top: 9px;
     padding-bottom: 9px;
-    background-color:#fff;
-    border:1px solid #0000000f;
-    border-radius: .75rem;
-    box-shadow: 0px 5px 16px 0px #00000014,0px 0px 1.25px 0px #0000000f;
+    background: rgba(18, 38, 79, 0.8);
+    border:1px solid rgba(76, 118, 208, 0.25);
+    border-radius: 1rem;
+    box-shadow:
+      0px 12px 32px rgba(6, 12, 29, 0.5),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.04);
     display: flex;
     justify-content: space-between;
+    color: var(--ma-text-primary);
 }
 
 :deep(.more-btn){

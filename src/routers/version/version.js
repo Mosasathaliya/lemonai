@@ -4,7 +4,7 @@ const { version } = require('../../../package.json');
 
 // Configure the GitHub API URL
 const GITHUB_OWNER = 'hexdocom';
-const GITHUB_REPO = 'lemonai';
+const GITHUB_REPO = 'mighty-agent';
 const GITHUB_API_URL = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/releases/latest`;
 
 // Add proxy and GitHub token

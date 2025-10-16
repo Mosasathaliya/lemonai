@@ -21,7 +21,7 @@
 
     <div class="welcome-content">
       <h1>{{ $t('lemon.welcome.greeting', { username }) }}</h1>
-      <p>Create, Training, Evoloving you new Agent</p>
+      <p>Create, train, and evolve your Mighty Agent.</p>
       <ChatInput @send="handleWelcomeInput" />
     </div>
 
@@ -78,7 +78,7 @@ const handleWelcomeInput = async (value) => {
   const result = await chatStore.createConversation(text, mode.value);
   const { conversation_id } = result;
   if (conversation_id) {
-    router.push(`/lemon/${agent.value.id}/${conversation_id}`);
+    router.push(`/chat/${agent.value.id}/${conversation_id}`);
   }
   if (mode.value === 'chat') {
     await seeAgent.sendMessage(text, conversation_id, [], mcp_server_ids,workMode);
@@ -104,9 +104,11 @@ const closeDropdown = () => {
 
 <style lang="scss" scoped>
 .welcome-screen {
-  background: #f8f8f7;
+  background: linear-gradient(205deg, rgba(12, 24, 54, 0.95) 0%, rgba(7, 14, 34, 0.96) 65%, rgba(3, 7, 20, 0.98) 100%);
   overflow: auto;
   height: 100%;
+  padding: 0 36px 56px;
+  color: var(--ma-text-primary);
 }
 
 .welcome-content {
@@ -116,18 +118,21 @@ const closeDropdown = () => {
   max-width: 768px;
   width: 100%;
   font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+  text-align: center;
 
   h1 {
-    line-height: 40px;
-    font-size: 32px;
-    color: #34322d;
+    line-height: 42px;
+    font-size: 34px;
+    color: var(--ma-text-primary);
     margin: 0 !important;
+    text-shadow: 0 12px 35px rgba(6, 136, 255, 0.35);
   }
 
   p {
-    color: #858481;
-    font-size: 32px;
-    margin-bottom: 16px;
+    color: var(--ma-text-secondary);
+    font-size: 26px;
+    margin-bottom: 24px;
+    letter-spacing: 0.02em;
   }
 }
 
@@ -137,14 +142,13 @@ const closeDropdown = () => {
   position: relative;
   font-size: 16px;
   margin-top: 8px;
-  color: #333;
+  color: var(--ma-text-primary);
   width: fit-content;
-  padding: 4px 8px;
-  border-radius: 4px;
-
-  &:hover {
-    // background-color: #0000000f;
-  }
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(20, 42, 88, 0.45);
+  border: 1px solid rgba(76, 118, 208, 0.25);
+  box-shadow: var(--ma-shadow-soft);
 }
 
 .dropdown-icon-wrapper {
@@ -152,38 +156,40 @@ const closeDropdown = () => {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 24px;
-  height: 24px;
+  width: 28px;
+  height: 28px;
   cursor: pointer;
 
   .dropdown-menu {
     position: absolute;
     top: 100%; // 紧挨着下拉 icon 下边
     left: 0;
-    background: white;
-    border: 1px solid #e0e0e0;
-    border-radius: 4px;
-    padding: 4px 0;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    background: var(--ma-surface-elevated);
+    border: 1px solid var(--ma-border);
+    border-radius: 12px;
+    padding: 6px 0;
+    box-shadow: var(--ma-shadow-soft);
     z-index: 10;
-    min-width: 120px;
+    min-width: 140px;
   }
 
   .menu-item {
     display: flex;
     align-items: center;
-    gap: 6px;
-    padding: 6px 10px;
+    gap: 8px;
+    padding: 8px 14px;
     font-size: 13px;
     cursor: pointer;
-    color: #333;
+    color: var(--ma-text-primary);
+    transition: all 0.2s ease;
 
     &.danger {
       color: #ff4d4f;
     }
 
     &:hover {
-      background-color: #0000000f;
+      background: rgba(47, 107, 255, 0.22);
+      color: var(--ma-accent);
     }
 
 
@@ -211,7 +217,7 @@ const closeDropdown = () => {
   }
 
   .welcome-screen{
-      padding: 0px 16px;
+      padding: 0 16px 36px;
       ::v-deep(.store .mobile-menu-btn) {
         display: none!important;
       }
@@ -243,27 +249,33 @@ const closeDropdown = () => {
   text-align: center;
   font-size: 0.875rem;
   line-height: 1.25rem;
-  color: #b9b9b7;
+  color: var(--ma-text-muted);
 }
 
 .tab {
-  padding: 7px 1rem;
-  border-radius: 999999px;
-  border: 1px solid #0000000f;
-  color: #858481;
+  padding: 8px 1.1rem;
+  border-radius: 999px;
+  border: 1px solid rgba(76, 118, 208, 0.25);
+  color: var(--ma-text-secondary);
   font-size: 0.875rem;
   line-height: 1.25rem;
   text-decoration: none;
   white-space: nowrap;
+  transition: all 0.2s ease;
+  background: rgba(22, 39, 82, 0.35);
 
   &:hover {
-    background: #f5f5f5;
+    background: rgba(47, 107, 255, 0.22);
+    color: var(--ma-accent);
+    box-shadow: var(--ma-shadow-glow);
   }
 
   &.active {
-    background: #000;
-    color: #fff;
+    background: linear-gradient(135deg, var(--ma-primary-strong) 0%, var(--ma-secondary) 70%, var(--ma-accent) 100%);
+    color: var(--ma-text-primary);
     font-weight: 600;
+    border-color: var(--ma-border-strong);
+    box-shadow: var(--ma-shadow-glow);
   }
 }
 
@@ -272,8 +284,9 @@ const closeDropdown = () => {
     height: 48px;
     position: sticky;
     top: 0;
-    background-color: #f8f8f7;
+    background: rgba(7, 14, 34, 0.9);
     z-index: 1;
+    backdrop-filter: blur(12px);
   }
 
   .icon {
@@ -285,14 +298,14 @@ const closeDropdown = () => {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 24px;
-  height: 24px;
+  width: 28px;
+  height: 28px;
   cursor: pointer;
 }
 
 .dropdown-icon {
   font-size: 16px;
-  color: #999;
+  color: var(--ma-text-secondary);
 }
 
 /* 适配 移动端 */

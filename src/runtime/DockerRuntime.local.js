@@ -129,7 +129,7 @@ class DockerRuntime {
     exposedPortsMap[`${app_port_1}/tcp`] = {}
     exposedPortsMap[`${app_port_2}/tcp`] = {}
 
-    const imageName = 'hexdolemonai/lemon-runtime-sandbox:latest';
+    const imageName = 'hexdomighty-agent/mighty-agent-runtime-sandbox:latest';
     await this.ensureImageExists(docker, imageName);
 
     const container = await docker.createContainer({

@@ -83,7 +83,7 @@ class DockerRuntime {
   }
 
   get_vscode_url(dir_name) {
-    return `https://${this.user_id}-vscode.lemonai.ai?folder=/workspace/${dir_name}`
+    return `https://${this.user_id}-vscode.mighty-agent.ai?folder=/workspace/${dir_name}`
   }
 
   async find_available_port(port_range) {

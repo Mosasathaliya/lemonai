@@ -1,8 +1,8 @@
 export default {
   // 로그인 화면
   auth: {
-    loginToLemonAI: "LemonAI에 로그인",
-    registerLemonAIAccount: "LemonAI 계정 등록",
+    loginToLemonAI: "Mighty Agent에 로그인",
+    registerLemonAIAccount: "Mighty Agent 계정 등록",
     verifyEmail: "이메일 인증",
     resetPassword: "비밀번호 재설정",
     loginWithGoogle: "Google로 로그인",
@@ -53,7 +53,7 @@ export default {
     verifyingGoogleLogin: "Google 로그인 인증 중"
   },
   // 메인 화면
-  lemon: {
+  lemonAI: {
     // 홈
     welcome: {
       greeting: "안녕하세요",
@@ -173,9 +173,9 @@ export default {
       saveToGoogleDrivePending: "Google Drive 저장 기능은 준비 중입니다."
     },
     preview: {
-      title: "Lemon의 컴퓨터",
+      title: "Mighty Agent의 컴퓨터",
       openVsCode: "VS Code",
-      using: "Lemon 사용 중",
+      using: "Mighty Agent 사용 중",
       performing: "실행 중",
       previousStep: "이전 단계",
       nextStep: "다음 단계",

@@ -13,7 +13,7 @@
           <div class="header-content">
             <!-- <span class="header-title"></span> -->
             <!-- 移动端显示返回箭头 -->
-            <button class="collapse-btn mobile-only" @click="handleBackToLemon">
+            <button class="collapse-btn mobile-only" @click="handleBackToAgentHome">
               <ArrowLeftOutlined style="width: 20px; height: 20px;" />
             </button>
             <!-- PC端显示收起按钮 -->
@@ -174,8 +174,8 @@ const isMobile = () => {
 }
 
 function updateCollapse() {
-  console.log('route ===== ', route.path.includes('/lemon'))
-  if (!route.path.includes('/lemon')) {
+  console.log('route ===== ', route.path.includes('/chat'))
+  if (!route.path.includes('/chat')) {
     showCollapse.value = false
     return
   }
@@ -207,7 +207,7 @@ const toggleCollapse = () => {
   isCollapsed.value = !isCollapsed.value
 }
 
-const handleBackToLemon = () => {
+const handleBackToAgentHome = () => {
   isCollapsed.value = true
   
   chatStore.conversationId = null
@@ -217,7 +217,7 @@ const handleBackToLemon = () => {
     emitter.emit('toggleMobileMenu', true)
   }, 100)
   
-  router.push('/lemon')
+  router.push('/chat')
 }
 
 const handleOverlayClick = () => {
@@ -273,9 +273,9 @@ const handleNewChat = () => {
   chatStore.conversationId = null;
   chatStore.clearMessages();
   if(mode.value === 'task'){
-    router.push(`/lemon/${agent.value.id}`);
+    router.push(`/chat/${agent.value.id}`);
   }else{
-    router.push('/lemon');
+    router.push('/chat');
   }
   
 };
@@ -298,9 +298,9 @@ const handleChatClick = (chat) => {
   chatStore.clearMessages();
   chatStore.initConversation(chat.conversation_id);
   if(mode.value == 'chat'){
-    router.push(`/lemon/chat/${chat.conversation_id}`);
+    router.push(`/chat/chat/${chat.conversation_id}`);
   }else{
-    router.push(`/lemon/${agent.value.id}/${chat.conversation_id}`);
+    router.push(`/chat/${agent.value.id}/${chat.conversation_id}`);
   }
 };
 
@@ -342,7 +342,7 @@ const handleDelete = async () => {
       await chatStore.removeConversation(chatToDelete.value.conversation_id);
       deleteModalVisible.value = false;
       chatToDelete.value = null;
-      router.push('/lemon');
+      router.push('/chat');
     } catch (error) {
       console.error('Failed to delete conversation:', error);
     }
