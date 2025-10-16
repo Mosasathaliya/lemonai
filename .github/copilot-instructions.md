@@ -1,187 +1,143 @@
-# GitHub Copilot Instructions for Mighty Agent (LemonAI)
+# GitHub Copilot Instructions for Mighty Agent
 
-## Project Overview
+## What is Mighty Agent?
+**Full-stack, open-source agentic AI framework** - local alternative to Manus/Genspark with Docker-sandboxed code execution. Supports deep research, web browsing, coding, and data analysis on local hardware.
 
-Mighty Agent is a **full-stack, open-source, agentic AI framework** that provides a fully local alternative to platforms like Manus & Genspark AI. It features an integrated Code Interpreter VM sandbox for safe code execution, supporting deep research, web browsing, viable coding, and data analysis entirely on local hardware.
+**Stack**: Node.js (Koa) + Vue 3 + SQLite/MySQL + Docker + Electron. Runs locally (Ollama) or cloud (Claude/GPT/Gemini/Grok).
 
-### Core Capabilities
-- **Planning & Execution**: Multi-step task planning with reflection and memory
-- **Code Interpreter**: Safe code execution in Docker/VM sandboxes
-- **Multi-Model Support**: Works with local LLMs (DeepSeek, Qwen, Llama, Gemma via Ollama) and cloud APIs (Claude, GPT, Gemini, Grok)
-- **Web Integration**: Browser automation, web search, and data scraping
-- **MCP Integration**: Model Context Protocol for extensible tool integration
+## Critical Architecture Patterns
 
-## Tech Stack
+### 1. Three-Tier Runtime System (THE KEY PATTERN)
+Runtime selection via `RUNTIME_TYPE` env var determines code execution environment:
 
-### Backend (Node.js)
-- **Framework**: Koa v2 - Lightweight web framework
-- **ORM**: Sequelize - Database abstraction layer
-- **Database**: SQLite (default) with support for MySQL
-- **Key Libraries**:
-  - `dockerode` - Docker API integration
-  - `playwright` - Browser automation
-  - `@modelcontextprotocol/sdk` - MCP integration
-  - `koa-router` - API routing
-  - `dotenv` - Environment configuration
-  - `winston` / `pino` - Logging
-
-### Frontend (Vue.js)
-- **Framework**: Vue 3 with Composition API
-- **Build Tool**: Vite 6.x
-- **State Management**: Vuex store pattern
-- **Router**: Vue Router with history mode
-- **Styling**: SCSS with embedded Sass
-
-### Desktop Application
-- **Framework**: Electron 29.x
-- **Build**: Electron Forge with Vite plugin
-- **Packaging**: DMG (macOS), Squirrel (Windows), DEB/RPM (Linux)
-
-### Deployment & Cloud
-- **Containerization**: Docker with multi-platform support (amd64, arm64)
-- **Cloud**: Cloudflare Workers for serverless AI endpoints
-- **CI/CD**: GitHub Actions for Docker image builds
-
-## Architecture
-
-### Core Components
-
-#### 1. Agent System (`src/agent/`)
-The agentic AI system with multiple specialized modules:
-
-- **AgenticAgent.js**: Main agent orchestrator with task management
-- **TaskManager.js**: Tracks and manages multi-step tasks
-- **planning/**: Task planning with goal decomposition
-- **code-act/**: Code generation and execution loop
-  - `code-act.js` - Main code-action execution
-  - `thinking.js` - Agent reasoning process
-  - `message.js` - Message formatting
-- **reflection/**: Self-evaluation and improvement
-- **auto-reply/**: Automatic conversation handling
-- **intent-detection/**: User intent classification
-- **summary/**: Conversation summarization
-- **memory/**: Context and history management
-- **generate-agent/**: Dynamic agent creation
-- **multi-model-agent.js**: Multi-model orchestration
-
-#### 2. Runtime Environment (`src/runtime/`)
-Safe code execution with multiple runtime options:
-
-- **DockerRuntime.js**: Production Docker sandbox (remote)
-- **DockerRuntime.local.js**: Local Docker sandbox (default)
-- **LocalRuntime.js**: Direct local execution (dev only)
-- **action_execution_server.js**: Code execution API server
-- **plugins/**: Runtime extensions and integrations
-- **browser.js**: Browser automation integration
-- **terminal_run.js**: Terminal command execution
-
-**Runtime Selection** via `RUNTIME_TYPE` env var:
-- `docker` - Remote Docker (production)
-- `local-docker` - Local Docker (default, recommended)
-- `local` - No sandbox (development only)
-
-#### 3. API Layer (`src/routers/`)
-RESTful API with Swagger documentation:
-
-- **agent/**: Core AI agent endpoints
-  - `agent.js` - Agent orchestration
-  - `chat.js` - Chat completions
-  - `coding.js` - Code generation
-  - `run.js` - Task execution
-  - `proxy.js` - LLM proxy endpoints
-  - `embeddings.js`, `classify.js`, etc. - AI utilities
-- **conversation/**: Conversation management
-- **file/**: File operations and R2 storage
-- **message/**: Message history
-- **mcp_server/**: MCP server management
-- **knowledge/**: Knowledge base operations
-- **runtime/**: Runtime control endpoints
-- **user/**: User authentication and management
-
-#### 4. Data Layer (`src/models/`)
-Sequelize ORM models:
-
-- **User.js**: User accounts and authentication
-- **Conversation.js**: Chat conversations
-- **Message.js**: Individual messages
-- **Agent.js**: Agent configurations
-- **Task.js**: Task tracking
-- **File.js**, **FileVersion.js**: File management
-- **McpServer.js**: MCP server configurations
-- **Model.js**, **DefaultModelSetting.js**: LLM configurations
-- **Knowledge.js**: Knowledge base entries
-- **sync.js**: Database initialization and migrations
-
-#### 5. Tools & Utilities (`src/tools/`)
-External integrations and helper functions:
-
-- **WebSearch.js**: Web search integration
-- **browser.js**: Browser control
-- **read_file.js**: File reading utilities
-- **impl/**: Tool implementations
-
-#### 6. MCP Integration (`src/mcp/`)
-Model Context Protocol support:
-
-- **client.js**: MCP client connections
-- **server.js**: MCP server implementation
-- **transport.js**: Communication layer
-- **tool.js**: Tool registry and execution
-- **prompt.js**: Prompt management
-- **cache.js**: Response caching
-
-### Frontend Architecture (`frontend/`)
-
-- **src/components/**: Vue components (18 subdirectories)
-- **src/view/**: Page views
-- **src/store/**: Vuex state management
-- **src/router/**: Vue Router configuration
-- **src/services/**: API service layer
-- **src/utils/**: Frontend utilities
-
-## Development Workflow
-
-### Environment Setup
-
-1. **Prerequisites**:
-   - Node.js (v18+ recommended)
-   - Docker Desktop (for runtime sandboxes)
-   - pnpm (package manager)
-
-2. **Configuration** (`.env` file):
-   ```bash
-   STORAGE_PATH=data/database.sqlite
-   WORKSPACE_DIR=workspace
-   RUNTIME_TYPE=local-docker  # docker | local-docker | local
-   ENABLE_KNOWLEDGE=ON
-   ```
-
-3. **Installation**:
-   ```bash
-   make init  # Install all dependencies and initialize DB
-   # OR manually:
-   npm install --production
-   cd frontend && npm install
-   node src/models/sync.js  # Initialize database
-   ```
-
-### Running the Application
-
-#### Development Mode
-```bash
-make run  # Starts both backend and frontend
-# OR separately:
-npm run start      # Backend on port 5005
-cd frontend && npm run dev  # Frontend dev server
+```javascript
+// src/agent/AgenticAgent.js
+const RUNTIME_TYPE = process.env.RUNTIME_TYPE || 'local-docker';
+const runtimeMap = {
+  'local': LocalRuntime,           // NO sandbox - dev only, UNSAFE
+  'docker': DockerRuntime,          // Remote Docker - production
+  'local-docker': LocalDockerRuntime // Local Docker - DEFAULT, recommended
+}
 ```
 
-#### Production Mode
-```bash
-npm run prd  # Uses PM2 process manager
+**Why this matters**: 
+- `local-docker` is the sweet spot: sandboxed but accessible for debugging
+- ALWAYS use sandboxed runtime in production (docker/local-docker)
+- Docker container management is in `src/runtime/DockerRuntime.local.js` - container reuse, port allocation logic
+
+### 2. Message Streaming Architecture
+All agent actions stream via SSE (Server-Sent Events):
+
+```javascript
+// Pattern seen in src/agent/AgenticAgent.js
+async _publishMessage({ uuid, action_type, status, content, json, task_id }) {
+  const msg = Message.format({ uuid, action_type, status, content, json, task_id });
+  this.onTokenStream(msg);  // Stream to frontend
+  await Message.saveToDB(msg, this.context.conversation_id);  // Persist
+}
+
+// Action types: 'thinking', 'code_execution', 'auto_reply', 'finish_summery'
+// Status: 'in_progress', 'success', 'error'
 ```
 
-#### Docker Mode
+**Critical**: Frontend expects real-time message streams via `src/routers/agent/coding.sse.js`. Always maintain this pattern for new agent actions.
+
+### 3. Module Alias Pattern
+**ALWAYS** use `@src/` prefix for imports (configured in `jsconfig.json` + `package.json`):
+
+```javascript
+// CORRECT ✓
+const Message = require('@src/utils/message.js');
+const Conversation = require('@src/models/Conversation');
+
+// WRONG ✗ - relative paths break in some contexts
+const Message = require('../../../utils/message.js');
+```
+
+### 4. Agent Execution Flow (Code-Act Loop)
+The agent uses a **Code-Act** pattern - think, code, execute, reflect:
+
+```javascript
+// src/agent/AgenticAgent.js - Simplified flow
+class AgenticAgent {
+  async run() {
+    await this._initialSetupAndAutoReply();    // 1. Connect runtime, auto-reply
+    await this._performPlanning();             // 2. Plan tasks
+    await this._executeTasks();                // 3. Run code-act loop
+    return await this._generateFinalOutput();  // 4. Summarize & version files
+  }
+  
+  // The critical run_loop in AgenticAgent.run.js
+  async run_loop() {
+    while (!this.is_stop && this.taskManager.hasIncompleteTasks()) {
+      const thinkingResult = await thinking(/* context */);  // LLM thinks
+      const codeResult = await execute_code(/* ... */);       // Execute in sandbox
+      await this._publishMessage(/* stream results */);       // Stream to frontend
+      // Reflection happens here in production
+    }
+  }
+}
+```
+
+**Key insight**: Each iteration generates messages streamed to frontend. The runtime (Docker container) persists across iterations for performance.
+
+### 5. MCP (Model Context Protocol) Integration
+Extensible tool system - add capabilities without code changes:
+
+```javascript
+// MCP servers defined in database (McpServer model)
+// Tools auto-discovered from: src/mcp/client.js
+const mcpClient = new MCPClient(serverConfig);
+await mcpClient.connect();
+const tools = await mcpClient.listTools();  // Tools exposed to agent
+
+// Used in: src/agent/code-act/code-act.js
+const mcpTools = await getMCPTools(context.mcp_server_ids);
+// Agent can now call these tools during execution
+```
+
+**Pattern**: Add new capabilities via MCP servers (database config) instead of modifying core agent code.
+
+## Essential Development Workflows
+
+### Quick Start Commands
 ```bash
+# ONE command to setup everything
+make init              # Installs deps + initializes DB
+
+# Development (starts both frontend & backend)
+make run               # Backend on :5005, Frontend on :5173
+
+# OR run separately
+npm run start          # Backend only
+cd frontend && npm run dev  # Frontend only
+
+# Production
+npm run prd            # PM2 process manager
+
+# Electron Desktop App
+npm run start-electron # Dev mode
+npm run package        # Package for current platform
+npm run make          # Build distributables (DMG/exe/deb/rpm)
+```
+
+### Database Initialization Pattern
+**CRITICAL**: Run BEFORE first start:
+```bash
+node src/models/sync.js  # Creates/migrates all tables
+# OR
+make init-tables
+```
+
+Tables created: User, Conversation, Message, File, FileVersion, Task, Agent, Model, McpServer, Knowledge, Platform, etc.
+See `src/models/sync.js` for default data seeding (platforms, models).
+
+### Docker Development Setup
+```bash
+# 1. Pull runtime sandbox image (REQUIRED for code execution)
+docker pull hexdocom/mighty-agent-runtime-sandbox:latest
+
+# 2. Run app in Docker (for testing production setup)
 docker run -it --rm \
   --name mighty-agent-app \
   --env DOCKER_HOST_ADDR=host.docker.internal \
@@ -192,277 +148,390 @@ docker run -it --rm \
   hexdocom/mighty-agent:latest make run
 ```
 
-#### Electron App
+**Why mount Docker socket?** App needs to spawn sandbox containers for code execution. Security implication: container has Docker access.
+
+### Testing Pattern
 ```bash
-npm run start-electron  # Development
-npm run package         # Package for current platform
-npm run make           # Create distributable
-```
+npm test  # Runs Mocha tests in test/api/
 
-### Build & Deployment
+# Test structure example (test/api/platform/platform.test.js):
+const request = require("supertest");
+const sinon = require("sinon");
+const { expect } = require("chai");
+const app = require("@src/app");
 
-#### Building Images
-```bash
-make build-runtime-sandbox  # Build sandbox image
-make build-app              # Build application image
-```
-
-#### Cloudflare Workers
-```bash
-cd frontend && pnpm run build  # Build frontend
-pnpm run build                 # Build Worker
-wrangler deploy                # Deploy to Cloudflare
-```
-
-### Testing
-
-```bash
-npm run test  # Run Mocha tests
-# Tests are in test/api/ directory
-```
-
-## Code Conventions
-
-### JavaScript/Node.js Backend
-
-1. **Module Aliases**: Use `@src/` prefix for imports
-   ```javascript
-   const Message = require('@src/utils/message.js');
-   const Conversation = require('@src/models/Conversation');
-   ```
-
-2. **Async/Await**: Prefer async/await over callbacks
-   ```javascript
-   async function executeTask() {
-     const result = await someAsyncOperation();
-     return result;
-   }
-   ```
-
-3. **Error Handling**: Use try-catch blocks and proper error propagation
-   ```javascript
-   app.on('error', (err, ctx) => {
-     console.error('server error', err, ctx);
-   });
-   ```
-
-4. **Environment Variables**: Always use `process.env` with defaults
-   ```javascript
-   const RUNTIME_TYPE = process.env.RUNTIME_TYPE || 'local-docker';
-   ```
-
-5. **Logging**: Use structured logging
-   ```javascript
-   const { logging } = require("@src/logger/index");
-   global.logging = logging;
-   ```
-
-### Frontend (Vue 3)
-
-1. **Composition API**: Use `<script setup>` syntax
-2. **Component Structure**: Keep components focused and reusable
-3. **State Management**: Use Vuex for global state, local reactive state for component-specific data
-4. **Styling**: Use scoped SCSS, follow BEM-like naming conventions
-
-### File Organization
-
-1. **Feature-based**: Group related files by feature/domain
-2. **Index Files**: Use `index.js` for directory exports
-3. **Test Colocation**: Place tests near the code they test (`.test.js` suffix)
-4. **Configuration**: Keep config files at project root
-
-## Integration Points
-
-### 1. LLM Providers
-- **Local**: Ollama integration for local models
-- **Cloud**: OpenAI, Anthropic Claude, Google Gemini, xAI Grok
-- **Cloudflare**: Workers AI for serverless inference
-- **Configuration**: Via `src/models/Model.js` and `DefaultModelSetting.js`
-
-### 2. MCP (Model Context Protocol)
-- **Purpose**: Extensible tool and prompt system
-- **Server Management**: `src/routers/mcp_server/`
-- **Client**: `src/mcp/client.js`
-- **Tool Registration**: `src/mcp/tool.js`
-
-### 3. Docker Runtime
-- **Image**: `hexdolemonai/lemon-runtime-sandbox`
-- **Purpose**: Isolated code execution environment
-- **Management**: `src/runtime/DockerRuntime.js`
-- **Security**: Sandboxed file system, network isolation
-
-### 4. Browser Automation
-- **Library**: Playwright
-- **Use Cases**: Web scraping, testing, automation
-- **Implementation**: `src/tools/browser.js`, `src/runtime/browser.js`
-
-### 5. File Storage
-- **Local**: `WORKSPACE_DIR` for conversation files
-- **Cloud**: R2 (Cloudflare Object Storage) integration
-- **Versioning**: Git-like file versioning system
-
-### 6. Knowledge Base
-- **Feature**: RAG (Retrieval Augmented Generation)
-- **Storage**: Vector embeddings in database
-- **Management**: `src/routers/knowledge/`
-
-## Common Patterns
-
-### 1. Agent Execution Flow
-```javascript
-const agent = new AgenticAgent(context);
-agent.setGoal(userGoal);
-await agent.run();
-```
-
-### 2. Runtime Code Execution
-```javascript
-const runtime = new LocalDockerRuntime(context);
-await runtime.connect_container();
-const result = await runtime.execute_code(code, language);
-```
-
-### 3. Message Publishing
-```javascript
-await this._publishMessage({
-  uuid: uuidv4(),
-  action_type: 'thinking',
-  status: 'in_progress',
-  content: thinkingContent,
-  task_id: taskId
+describe("Feature", () => {
+  let server;
+  before(() => { server = app.listen(); });
+  after(() => { server.close(); });
+  afterEach(() => { sinon.restore(); });
+  
+  it("should do something", async () => {
+    sinon.stub(Model, "method").resolves(mockData);
+    const res = await request(server).post("/api/endpoint").send(data);
+    expect(res.status).to.equal(200);
+  });
 });
 ```
 
-### 4. Database Operations
+**Convention**: Use `sinon` stubs for DB, `supertest` for HTTP, `chai` assertions. Place tests in `test/api/` or colocate with `.test.js` suffix.
+
+## Code Conventions You MUST Follow
+
+### 1. Error Handling & Response Format
 ```javascript
-const conversation = await Conversation.findOne({
-  where: { id: conversationId }
-});
-await conversation.update({ title: newTitle });
+// API responses use custom ctx.response wrapper (src/middlewares/wrap.context.js)
+ctx.response.success(data);           // { success: true, data, error: null }
+ctx.response.fail(data, message);     // { success: false, data, error: message }
+
+// NEVER return raw ctx.body = {} in routers - breaks frontend expectations
 ```
 
-### 5. API Response Format
+### 2. Async/Await Pattern
 ```javascript
-ctx.body = {
-  success: true,
-  data: result,
-  error: null
+// ALWAYS use async/await (no callbacks or .then chains)
+async function executeTask() {
+  const result = await someAsyncOperation();
+  return result;
+}
+
+// Error handling in routers
+router.post('/endpoint', async (ctx) => {
+  try {
+    const result = await operation();
+    return ctx.response.success(result);
+  } catch (error) {
+    console.error('Error:', error);
+    return ctx.response.fail({}, error.message);
+  }
+});
+```
+
+### 3. Environment Variables (with defaults!)
+```javascript
+// ALWAYS provide defaults for non-sensitive configs
+const RUNTIME_TYPE = process.env.RUNTIME_TYPE || 'local-docker';
+const WORKSPACE_DIR = process.env.WORKSPACE_DIR || 'workspace';
+const ENABLE_KNOWLEDGE = process.env.ENABLE_KNOWLEDGE === 'ON';
+
+// See .env.example for full list (33+ Cloudflare AI model configs)
+```
+
+### 4. Logging Pattern
+```javascript
+// Setup in src/app.js
+const { logging } = require("@src/logger/index");
+global.logging = logging;
+
+// Use structured logging (winston/pino)
+logging.info('Operation started', { conversationId, userId });
+logging.error('Operation failed', { error: err.message, stack: err.stack });
+
+// Console.log is OK for development, but prefer structured logging
+```
+
+### 5. Frontend (Vue 3 Composition API)
+```vue
+<script setup>
+import { ref, onMounted } from 'vue';
+import { useStore } from 'vuex';
+
+const store = useStore();
+const data = ref([]);
+
+onMounted(async () => {
+  data.value = await fetchData();
+});
+</script>
+
+<style scoped lang="scss">
+// Use scoped styles, SCSS syntax
+</style>
+```
+
+## Critical Integration Points
+
+### 1. LLM Provider System
+Multi-provider support via `src/models/Model.js` and `DefaultModelSetting.js`:
+
+```javascript
+// Models configured in DB with platform association
+// Supported: Ollama (local), OpenAI, Claude, Gemini, Grok, Azure, Cloudflare Workers AI
+
+// In agent code:
+const { getDefaultModel } = require('@src/utils/default_model');
+const model = await getDefaultModel(userId, 'chat'); // or 'embedding', 'code', etc.
+
+// Cloudflare Workers AI: 30+ models via env vars (CF_AI_MODEL, CF_GEMMA_MODEL, etc.)
+```
+
+### 2. File Storage & Versioning
+```javascript
+// Local storage pattern (workspace per conversation)
+const dir_name = 'Conversation_' + conversation_id.slice(0, 6);
+const WORKSPACE_DIR = process.env.WORKSPACE_DIR || 'workspace';
+const conversationDir = path.join(WORKSPACE_DIR, dir_name);
+
+// Git-like versioning (src/utils/versionManager.js)
+await createFilesVersion(conversation_id, newFiles, '.html', state);
+
+// Cloud storage: R2 (Cloudflare Object Storage) - see src/middlewares/r2.js
+```
+
+### 3. Browser Automation (Playwright)
+```javascript
+// Python service: browser_server/ (FastAPI/Flask + Playwright)
+// Node.js wrapper: src/runtime/browser.js, src/tools/browser.js
+
+// Pattern: Agent calls browser tools during code-act loop
+// See browser_server/readme.md for setup
+```
+
+### 4. Knowledge Base (RAG)
+```javascript
+// Enable via ENABLE_KNOWLEDGE=ON
+// Storage: Vector embeddings in database (Knowledge model)
+// Management: src/routers/knowledge/
+// Integration: Used in agent planning/execution for context retrieval
+```
+
+## Common Tasks & Patterns
+
+### Adding a New API Endpoint
+```javascript
+// 1. Create router file: src/routers/<domain>/<feature>.js
+const router = require("koa-router")();
+
+/**
+ * @swagger
+ * /api/feature:
+ *   post:
+ *     summary: Feature description
+ *     tags: [Feature]
+ */
+router.post("/", async (ctx) => {
+  try {
+    const result = await operation();
+    return ctx.response.success(result);
+  } catch (error) {
+    return ctx.response.fail({}, error.message);
+  }
+});
+
+module.exports = router;
+
+// 2. Register in src/routers/index.js
+const feature = require('./feature');
+router.use('/api/feature', feature.routes());
+
+// 3. Frontend service (frontend/src/services/<feature>.js)
+export const createFeature = (data) => {
+  return request.post('/api/feature', data);
 };
 ```
 
-## Security Considerations
+### Adding a New Tool (MCP Pattern)
+```javascript
+// 1. Implement in src/tools/impl/new_tool.js
+async function newTool(params) {
+  // Tool logic
+  return result;
+}
 
-1. **Sandboxing**: Always use Docker runtime in production (`RUNTIME_TYPE=docker` or `local-docker`)
-2. **Input Validation**: Validate all user inputs, especially code to be executed
-3. **Authentication**: JWT-based auth via `src/middlewares/auth.js`
-4. **File Access**: Restrict file operations to `WORKSPACE_DIR`
-5. **API Keys**: Store in environment variables, never commit to repo
-6. **Docker Socket**: Mount Docker socket with caution, understand security implications
+// 2. Register in src/tools/index.js
+module.exports = {
+  new_tool: newTool,
+  // ... other tools
+};
 
-## Performance Optimization
-
-1. **Database**: Use indexes on frequently queried fields
-2. **Caching**: MCP responses cached via `src/mcp/cache.js`
-3. **Streaming**: Use SSE for real-time updates (`coding.sse.js`)
-4. **Connection Pooling**: Reuse Docker containers when possible
-5. **Frontend**: Code splitting with Vite, lazy load routes
-
-## Debugging Tips
-
-1. **Logging Levels**: Adjust via environment variables
-2. **Docker Logs**: `docker logs mighty-agent-app`
-3. **Database Inspection**: SQLite files in `data/` directory
-4. **API Testing**: Swagger UI at `/swagger`
-5. **Frontend DevTools**: Vue DevTools extension
-6. **Runtime Debugging**: Set `RUNTIME_TYPE=local` for direct debugging
-
-## Contributing Guidelines
-
-1. **Branch Strategy**: Feature branches from `main`
-2. **Commit Messages**: Clear, descriptive commit messages
-3. **PR Process**: 
-   - Create issue first
-   - Link PR to issue with "fixes #<issue_number>"
-   - Add tests for new features
-   - Ensure existing tests pass
-4. **Code Review**: Required before merge
-5. **Documentation**: Update relevant docs with code changes
-
-## Common Tasks
-
-### Adding a New API Endpoint
-1. Create route handler in `src/routers/<domain>/`
-2. Add Swagger JSDoc comments
-3. Update `src/routers/index.js` to register route
-4. Add controller logic
-5. Update frontend service in `frontend/src/services/`
-
-### Adding a New Tool
-1. Implement tool in `src/tools/impl/`
-2. Register in `src/tools/index.js`
-3. Add MCP integration if needed
-4. Document tool capabilities
-
-### Adding a New Runtime
-1. Create runtime class in `src/runtime/`
-2. Implement required interface methods
-3. Add to `runtimeMap` in `AgenticAgent.js`
-4. Update environment configuration
+// 3. OR add as MCP server (better for extensibility)
+// Add McpServer record in DB, agent auto-discovers tools
+```
 
 ### Modifying Agent Behavior
-1. Update prompts in `src/agent/prompt/`
-2. Modify agent logic in `src/agent/AgenticAgent.js`
-3. Adjust code-act loop in `src/agent/code-act/`
-4. Test with various scenarios
+```javascript
+// 1. Update prompts: src/agent/prompt/*.js
+const systemPrompt = `You are a helpful assistant...`;
 
-## Helpful Resources
+// 2. Adjust code-act loop: src/agent/code-act/code-act.js
+// 3. Modify thinking: src/agent/code-act/thinking.js
+// 4. Update reflection: src/agent/reflection/index.js
 
-- **Documentation**: https://mighty-agent-11.gitbook.io/mighty-agent
-- **Docker Deployment**: README.md (Docker Quick Deployment section)
-- **Contributing**: CONTRIBUTING.md
-- **API Documentation**: API_README.md
-- **Frontend Setup**: frontend/WEB_README.md (referenced in CONTRIBUTING.md)
-- **GitHub Issues**: https://github.com/hexdocom/Mighty-Agent/issues
-- **Discord**: Community support channel
+// WARNING: Changes affect all agent interactions - test thoroughly
+```
+
+### Database Model Changes
+```javascript
+// 1. Update model: src/models/Feature.js
+const { DataTypes } = require('sequelize');
+const sequelize = require('./db');
+
+const Feature = sequelize.define('Feature', {
+  new_field: DataTypes.STRING
+});
+
+// 2. Add to sync: src/models/sync.js
+await Feature.sync({ alter: true }); // Auto-migrates in dev
+
+// 3. Production: Manual migration or backup before alter
+```
+
+## Debugging & Troubleshooting
+
+### Common Issues
+
+**Docker container won't start:**
+```bash
+# Check Docker socket permissions
+ls -la /var/run/docker.sock
+sudo chmod 666 /var/run/docker.sock  # Or add user to docker group
+
+# Check if port is available
+lsof -i :5005
+```
+
+**"Cannot find module @src/...":**
+```bash
+# Ensure module-alias is registered (should be in src/app.js line 1)
+require("module-alias/register");
+
+# Check jsconfig.json has correct paths
+```
+
+**Database locked errors (SQLite):**
+```javascript
+// SQLite doesn't handle concurrent writes well
+// Solution: Use transactions or switch to MySQL for production
+await sequelize.transaction(async (t) => {
+  await Model.create(data, { transaction: t });
+});
+```
+
+**Frontend can't connect to backend:**
+```javascript
+// Check CORS (enabled by default in Koa)
+// Verify API_BASE_URL in frontend/src/config/
+// Check if backend is actually running on :5005
+```
+
+### Debugging Runtime Issues
+```bash
+# 1. Set RUNTIME_TYPE=local for direct debugging (NO SANDBOX)
+RUNTIME_TYPE=local npm run start
+
+# 2. Check Docker logs
+docker logs -f <container_id>
+
+# 3. Inspect running container
+docker exec -it <container_id> /bin/bash
+
+# 4. View execution logs in DB
+# SELECT * FROM Messages WHERE action_type = 'code_execution';
+```
+
+### API Testing
+```bash
+# Swagger UI at http://localhost:5005/swagger
+# Or use curl:
+curl -X POST http://localhost:5005/api/agent/chat \
+  -H "Content-Type: application/json" \
+  -d '{"message": "Hello"}'
+```
 
 ## Project-Specific Notes
 
-1. **Naming**: Project was formerly "LemonAI" (hexdolemonai), now "Mighty Agent" (hexdocom/mighty-agent)
-2. **Multi-Platform**: Supports macOS, Windows (WSL), and Linux
-3. **License**: Mighty Agent Open Source License (Apache 2.0 with restrictions)
-4. **Internationalization**: English and Chinese (CN) documentation
-5. **Desktop App**: Available for download at https://MightyAgent.cc/
-6. **Minimum Requirements**: 4GB RAM, modern processor, Docker Desktop support
+### Naming History
+- **Former**: "LemonAI" (hexdolemonai namespace)
+- **Current**: "Mighty Agent" (hexdocom namespace)
+- Some image names still use "lemon" prefix (backward compat)
 
-## Quick Reference
+### Multi-Platform Support
+- **Desktop**: macOS (DMG), Windows (Squirrel), Linux (DEB/RPM)
+- **Docker**: amd64 + arm64 builds
+- **WSL**: Windows requires WSL2 + Docker Desktop
 
-### Key Files
-- `src/app.js` - Koa application setup
+### Cloudflare Workers Deployment
+```bash
+# Build workflow (cloudflare/ directory)
+cd frontend && pnpm run build    # Frontend assets
+pnpm run build                    # Worker bundle
+wrangler deploy                   # Deploy to Cloudflare
+
+# wrangler.toml configures:
+# - AI binding (Workers AI)
+# - D1 database (SQLite on edge)
+# - R2 storage (file uploads)
+# - KV cache (response caching)
+# - Containers binding (main app)
+```
+
+## Key Files Reference
+
+### Critical Entry Points
+- `src/app.js` - Koa application setup, middleware chain
 - `main.js` - Electron main process
-- `src/agent/AgenticAgent.js` - Main agent class
-- `src/runtime/DockerRuntime.local.js` - Default runtime
-- `frontend/src/main.js` - Vue app entry
-- `Makefile` - Build and run commands
-- `package.json` - Dependencies and scripts
-- `.env.example` - Environment configuration template
+- `src/agent/AgenticAgent.js` - Main agent orchestrator
+- `src/runtime/DockerRuntime.local.js` - Default runtime implementation
+- `frontend/src/main.js` - Vue app bootstrap
+- `src/models/sync.js` - Database initialization & seeding
 
 ### Important Directories
-- `src/agent/` - AI agent implementation
-- `src/runtime/` - Code execution environments
-- `src/routers/` - API endpoints
-- `src/models/` - Database models
-- `src/mcp/` - MCP integration
-- `frontend/src/` - Vue.js frontend
-- `containers/` - Docker configurations
-- `test/` - Test files
+- `src/agent/` - AI agent implementation (planning, code-act, reflection)
+- `src/runtime/` - Code execution environments (local, docker, e2b)
+- `src/routers/` - API endpoints (RESTful + SSE)
+- `src/models/` - Sequelize ORM models
+- `src/mcp/` - Model Context Protocol integration
+- `frontend/src/components/` - Vue components (18+ subdirectories)
+- `containers/` - Dockerfile definitions
+- `test/api/` - Mocha test suites
 
-### Environment Variables
-- `RUNTIME_TYPE` - Runtime selection (docker/local-docker/local)
-- `STORAGE_PATH` - SQLite database path
-- `WORKSPACE_DIR` - Work files directory
-- `ENABLE_KNOWLEDGE` - Knowledge base feature toggle
-- `CF_*` - Cloudflare Workers AI configuration
+### Configuration Files
+- `.env.example` - Environment template (33+ Cloudflare AI configs)
+- `jsconfig.json` - Module aliases (@src/*, @types/*)
+- `package.json` - Backend dependencies & scripts
+- `frontend/package.json` - Frontend dependencies
+- `wrangler.toml` - Cloudflare Workers config
+- `forge.config.js` - Electron packaging config
+- `Makefile` - Build & deployment shortcuts
+
+## Essential Environment Variables
+```bash
+# Runtime
+RUNTIME_TYPE=local-docker  # local | docker | local-docker
+
+# Storage
+STORAGE_PATH=data/database.sqlite
+WORKSPACE_DIR=workspace
+ENABLE_KNOWLEDGE=ON        # Enable RAG features
+
+# Cloudflare (30+ model configs - see .env.example)
+CF_AI_USE=false
+CF_ACCOUNT_ID=your_account_id
+CF_API_TOKEN=your_api_token
+CF_AI_MODEL=@cf/meta/llama-3.1-8b-instruct
+# ... 27 more CF_*_MODEL variables for different models
+```
+
+## Resources
+
+- **Documentation**: https://mighty-agent-11.gitbook.io/mighty-agent
+- **API Docs**: `/swagger` endpoint + API_README.md
+- **Contributing**: CONTRIBUTING.md
+- **Docker Guide**: README.md (Docker Quick Deployment)
+- **Frontend Guide**: frontend/WEB_README.md
+- **Issues**: https://github.com/hexdocom/Mighty-Agent/issues
+- **Discord**: Community support
 
 ---
 
-*This document is maintained as part of the Mighty Agent project. For updates or corrections, please submit a PR.*
+**TL;DR for AI Agents**: 
+1. Use `@src/` imports, never relative paths
+2. Runtime system is Docker-based - `local-docker` is the default
+3. Message streaming via SSE is the communication pattern
+4. All agent actions flow through Code-Act loop in AgenticAgent
+5. Use `ctx.response.success/fail` for API responses
+6. Run `make init` first, then `make run` for dev
+7. MCP for adding tools without code changes
+8. Test with `npm test` (Mocha + Chai + Sinon)
+
+*Last updated: Based on codebase analysis of Mighty Agent v0.4.0*
