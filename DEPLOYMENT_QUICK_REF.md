@@ -39,13 +39,20 @@ npm create cloudflare@latest -- --template=cloudflare/templates/containers-templ
 # 1. Install dependencies
 pnpm install --frozen-lockfile
 
-# 2. Build application
-pnpm run build
+# 2. Build application (frontend only)
+npm run deploy:build
 
-# 3. Deploy
-npm run deploy:cloudflare           # Default
-npm run deploy:cloudflare:prod      # Production
-npm run deploy:cloudflare:staging   # Staging
+# 3. Deploy (includes build step automatically)
+npm run deploy:cloudflare           # Default (auto-builds)
+npm run deploy:cloudflare:prod      # Production (auto-builds)
+npm run deploy:cloudflare:staging   # Staging (auto-builds)
+```
+
+### Build Only (No Deployment)
+
+```bash
+# Just build the frontend for deployment
+npm run deploy:build
 ```
 
 ### Using Wrangler Directly
@@ -122,12 +129,16 @@ class_name = "MightyAgentContainer"
 
 ```mermaid
 graph TD
-    A[Install Dependencies] --> B[Build Frontend]
-    B --> C[Docker Builds Image]
-    C --> D[Push to Cloudflare Registry]
-    D --> E[Distribute Across Network]
-    E --> F[Deploy Worker]
-    F --> G[Ready to Receive Requests]
+    A[npm run deploy:cloudflare] --> B[Run deploy:build Script]
+    B --> C[Install Frontend Dependencies]
+    C --> D[Build Frontend with Vite]
+    D --> E[Copy to dist/ Directory]
+    E --> F[Wrangler Build Container]
+    F --> G[Docker Builds Image]
+    G --> H[Push to Cloudflare Registry]
+    H --> I[Distribute Across Network]
+    I --> J[Deploy Worker]
+    J --> K[Ready to Receive Requests]
 ```
 
 ## Useful Commands

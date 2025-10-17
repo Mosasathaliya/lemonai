@@ -13,9 +13,10 @@
     "package": "electron-forge package",
     "make": "electron-forge make",
     "build": "node build.js",
-    "deploy:cloudflare": "npx wrangler deploy",
-    "deploy:cloudflare:prod": "npx wrangler deploy --env production",
-    "deploy:cloudflare:staging": "npx wrangler deploy --env staging"
+    "deploy:build": "node build.js",
+    "deploy:cloudflare": "npm run deploy:build && npx wrangler deploy",
+    "deploy:cloudflare:prod": "npm run deploy:build && npx wrangler deploy --env production",
+    "deploy:cloudflare:staging": "npm run deploy:build && npx wrangler deploy --env staging"
   },
   "dependencies": {
     "@cloudflare/containers": "^0.0.28",

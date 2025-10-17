@@ -33,18 +33,9 @@ binding = "mighty_agent_userdata"
 bucket_name = "mighty-agent-userdata"
 
 # Container Configuration
-[containers]
-# This will use the local Dockerfile
-image = "mighty-agent:latest"
-build = { context = ".", dockerfile = "Dockerfile.cloudflare" }
-
-# Resource limits
-[containers.resources]
-cpu = 2
-memory = "10Gi"
-
-# Logging
-logpush = true
+[[containers]]
+class_name = "MightyAgentContainer"
+image = "./Dockerfile.cloudflare"
 
 # Durable Objects (required for containers)
 [[durable_objects.bindings]]

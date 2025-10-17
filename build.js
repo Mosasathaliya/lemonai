@@ -36,6 +36,21 @@ const logger = {
     debug: (msg) => process.env.DEBUG && console.log(`${COLORS.yellow}[DEBUG]${COLORS.reset} ${msg}`)
 };
 
+// Check if pnpm is available
+const hasPnpm = () => {
+    try {
+        execSync('pnpm --version', { stdio: 'ignore' });
+        return true;
+    } catch {
+        return false;
+    }
+};
+
+// Get the appropriate package manager
+const getPackageManager = () => {
+    return hasPnpm() ? 'pnpm' : 'npm';
+};
+
 // Execute command with better error handling
 const execute = (command, options = {}) => {
     const { cwd = process.cwd(), exitOnError = true } = options;
@@ -142,13 +157,19 @@ const main = async () => {
             throw new Error(`Frontend directory not found at: ${CONFIG.frontendDir}`);
         }
 
+        // Get the appropriate package manager
+        const pm = getPackageManager();
+        logger.info(`📦 Using ${pm} package manager...`);
+
         // Install dependencies
         logger.info('📦 Installing frontend dependencies...');
-        execute('pnpm install --frozen-lockfile', { cwd: CONFIG.frontendDir });
+        const installCmd = pm === 'pnpm' ? 'pnpm install' : 'npm install';
+        execute(installCmd, { cwd: CONFIG.frontendDir });
 
         // Build frontend
         logger.info('🔨 Building frontend...');
-        execute('pnpm run build', { cwd: CONFIG.frontendDir });
+        const buildCmd = pm === 'pnpm' ? 'VITE_IS_CLIENT=true pnpm run build' : 'VITE_IS_CLIENT=true npm run build';
+        execute(buildCmd, { cwd: CONFIG.frontendDir });
 
         // Clean and prepare output directory
         logger.info('🧹 Cleaning output directory...');
@@ -211,4 +232,4 @@ if (require.main === module) {
     });
 }
 
-module.exports = { execute, cleanDirectory, copyRecursiveSync };
+module.exports = { execute, cleanDirectory, copyRecursiveSync, getPackageManager, hasPnpm };
