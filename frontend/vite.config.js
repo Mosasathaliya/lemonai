@@ -26,12 +26,22 @@ export default defineConfig(({ mode }) => {
         requireReturnsDefault: 'auto'
       },
       optimizeDeps: {
+        include: [
+          'vue',
+          'ant-design-vue',
+          'lodash',
+          'axios',
+          'pinia',
+          'vue-router'
+        ],
         esbuildOptions: {
           target: 'es2022',
           supported: { 
             bigint: true 
           },
-          platform: 'node'
+          platform: 'node',
+          treeShaking: true,
+          minify: true
         }
       },
       rollupOptions: {
@@ -41,17 +51,20 @@ export default defineConfig(({ mode }) => {
           'fs',
           'path',
           'url',
-          'util'
+          'util',
+          'worker_threads'
         ],
         output: {
           format: 'es',
-          chunkFileNames: 'assets/[name]-[hash].js',
-          manualChunks(id) {
+          chunkFileNames: 'assets/[name]-[hash:8].js',
+          entryFileNames: 'assets/[name]-[hash:8].js',
+          assetFileNames: 'assets/[name]-[hash:8][extname]',
+          manualChunks: (id) => {
             if (id.includes('node_modules')) {
               if (id.includes('vue') || id.includes('ant-design-vue')) {
                 return 'vendor-vue';
               }
-              if (id.includes('d3')) {
+              if (id.includes('d3') || id.includes('topojson')) {
                 return 'vendor-d3';
               }
               if (id.includes('codemirror') || id.includes('lezer')) {
@@ -60,17 +73,24 @@ export default defineConfig(({ mode }) => {
               if (id.includes('mermaid')) {
                 return 'vendor-mermaid';
               }
+              if (id.includes('lodash') || id.includes('axios') || id.includes('dayjs')) {
+                return 'vendor-utils';
+              }
               return 'vendor';
             }
           }
+        },
+        treeshake: {
+          moduleSideEffects: false,
+          propertyReadSideEffects: false,
+          tryCatchDeoptimization: false
         }
       },
-      esbuildOptions: {
-        target: 'esnext',
-        platform: 'browser',
-        supported: {
-          'dynamic-import': true
-        }
+      esbuild: {
+        drop: ['console', 'debugger'],
+        minify: true,
+        target: 'es2022',
+        platform: 'browser'
       }
     },
     resolve: {

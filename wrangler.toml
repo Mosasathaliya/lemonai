@@ -3,7 +3,7 @@ main = "cloudflare/worker/index.ts"
 compatibility_date = "2024-10-10"
 compatibility_flags = ["nodejs_compat"]
 
-[[ai]]
+[ai]
 binding = "AI"
 
 [[d1_databases]]
@@ -32,7 +32,7 @@ KV_NAMESPACE_ID = "YOUR_KV_NAMESPACE_ID"
 
 [[containers]]
 class_name = "MightyAgentContainer"
-image = "./containers/app/Dockerfile"
+image = "registry.cloudflare.com/mighty-agent-containers-mightyagentcontainer:fab57ce7"
 instance_type = "standard-4"
 max_instances = 5
 
