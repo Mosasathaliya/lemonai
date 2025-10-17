@@ -151,8 +151,11 @@ pnpm install --frozen-lockfile
 # Build the application
 pnpm run build
 
-# Deploy to Cloudflare
-npx wrangler deploy
+# Deploy to Cloudflare (any of these methods)
+npm run deploy:cloudflare          # Default environment
+npm run deploy:cloudflare:prod     # Production
+npm run deploy:cloudflare:staging  # Staging
+# OR use wrangler directly: npx wrangler deploy
 ```
 
 For detailed instructions, prerequisites, and configuration options, see **[CLOUDFLARE_CONTAINERS.md](./CLOUDFLARE_CONTAINERS.md)**.

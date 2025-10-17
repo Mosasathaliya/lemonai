@@ -10,13 +10,21 @@ Containers can run a wide variety of languages and tools, use more memory and CP
 
 ## Quick Start: "Just let me deploy it!"
 
-If you want to skip ahead and deploy your Container-enabled Worker, you can click the "Deploy to Cloudflare" button or run the following command from your terminal:
+If you want to skip ahead and deploy your Container-enabled Worker, you can use one of these methods:
+
+### Using npm scripts (recommended):
+
+```bash
+npm run deploy:cloudflare
+```
+
+### Using the Cloudflare template:
 
 ```bash
 npm create cloudflare@latest -- --template=cloudflare/templates/containers-template
 ```
 
-For the Mighty Agent project specifically, use:
+### Using wrangler directly:
 
 ```bash
 npx wrangler deploy
@@ -191,6 +199,21 @@ npx wrangler login
 ```
 
 ### Step 4: Deploy
+
+Deploy using npm scripts:
+
+```bash
+# Deploy to default environment
+npm run deploy:cloudflare
+
+# Deploy to production
+npm run deploy:cloudflare:prod
+
+# Deploy to staging
+npm run deploy:cloudflare:staging
+```
+
+Or use wrangler directly:
 
 ```bash
 npx wrangler deploy
