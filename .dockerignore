@@ -1,0 +1,97 @@
+# Version control
+.git
+.gitignore
+.gitmodules
+.gitattributes
+
+# Dependencies
+node_modules/
+.pnpm-store/
+.pnpm-debug.log
+
+# Environment files
+.env*
+!.env.example
+
+# Build outputs
+/dist
+/build
+/.next
+/out
+/.cache
+/.svelte-kit
+/.nuxt
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Editor directories and files
+.idea/
+.vscode/
+*.sublime-*
+*.code-workspace
+*.swp
+*.swo
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Testing
+/coverage
+/cypress/
+*.test.js
+*.spec.js
+
+# Local development
+/.wrangler
+/.direnv
+
+# Misc
+*.md
+*.mdx
+*.pdf
+*.zip
+*.tar.gz
+*.pem
+*.p12
+*.key
+*.crt
+*.csr
+*.cer
+
+# Docker specific
+Dockerfile*
+docker-compose*
+.dockerignore
+
+# Cloudflare specific
+.wrangler
+.wrangler*
+
+# Temporary files
+*.tmp
+*.temp
+/temp
+/tmp
+
+# Debug logs
+*.log
+logs/
+
+# Lock files
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Local development
+.local-*

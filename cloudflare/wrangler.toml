@@ -1,0 +1,103 @@
+name = "mighty-agent"
+main = "src/index.js"
+compatibility_date = "2023-10-17"
+
+[build]
+  command = "npm run build"
+  upload.format = "service-worker"
+
+[site]
+  bucket = "./dist"
+  include = ["**/*"]
+
+[env.production]
+  route = "mightyagent.yourdomain.com/*"
+  zone_id = "your-zone-id"
+
+[env.staging]
+  route = "staging.mightyagent.yourdomain.com/*"
+  zone_id = "your-zone-id"
+
+# Environment variables
+[vars]
+  NODE_ENV = "production"
+  API_URL = "https://api.mightyagent.yourdomain.com"
+  WS_URL = "wss://ws.mightyagent.yourdomain.com"
+  
+# Secrets (set using wrangler secret put)
+# - JWT_SECRET
+# - DATABASE_URL
+# - GOOGLE_CLIENT_ID
+# - GOOGLE_CLIENT_SECRET
+# - MICROSOFT_CLIENT_ID
+# - MICROSOFT_CLIENT_SECRET
+
+# Durable Objects (if needed)
+# [[durable_objects]]
+#   name = "SESSIONS"
+#   class_name = "Sessions"
+
+# KV Namespaces (if needed)
+# [[kv_namespaces]]
+#   binding = "CACHE"
+#   id = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+#   preview_id = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+
+# R2 Buckets (if needed)
+# [[r2_buckets]]
+#   binding = "ASSETS"
+#   bucket_name = "mighty-agent-assets"
+#   preview_bucket_name = "mighty-agent-assets-preview"
+
+# Cron Triggers (if needed)
+# [triggers]
+#   crons = ["0 * * * *"]  # Run every hour
+
+# Analytics (optional)
+[analytics_engine_datasets]
+  # binding = "ANALYTICS"
+  # dataset = "mighty_agent_analytics"
+
+# Compatibility Flags
+[compatibility_flags]
+  nodejs_compat = true
+  webgpu = true
+
+# Limits
+[limits]
+  cpu_ms = 50
+  memory = 256
+  requests = 1000
+  cpu_script = 1000
+  cpu_script_runtime = 1000
+  memory_script = 128
+  memory_script_runtime = 128
+  
+# Logging
+[logpush]
+  enabled = true
+  sampling_rate = 0.1  # Sample 10% of requests
+
+# Cache Settings
+[cache]
+  browser_ttl = 3600  # 1 hour
+  edge_ttl = 86400    # 1 day
+  serve_stale = true
+
+# Headers (security)
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    X-XSS-Protection = "1; mode=block"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.google-analytics.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://api.mightyagent.yourdomain.com wss://ws.mightyagent.yourdomain.com;"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+    Strict-Transport-Security = "max-age=31536000; includeSubDomains; preload"
+
+# Routes (if not using zone-based routing)
+# [[routes]]
+#   pattern = "mightyagent.yourdommain.com/*"
+#   zone_name = "yourdomain.com"
+#   custom_domain = true

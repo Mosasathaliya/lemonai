@@ -1,49 +1,61 @@
-name = "mighty-agent-containers"
+# Project Metadata
+name = "mighty-agent"
 main = "cloudflare/worker/index.ts"
 compatibility_date = "2024-10-10"
 compatibility_flags = ["nodejs_compat"]
 
+# Environment Configuration
+[env.production]
+name = "mighty-agent"
+route = "mightyagent.yourdomain.com/*"
+
+[env.staging]
+name = "mighty-agent-staging"
+route = "staging.mightyagent.yourdomain.com/*"
+
+# AI Configuration
 [ai]
 binding = "AI"
 
+# Database Configuration
 [[d1_databases]]
 binding = "DB"
 database_name = "mighty-agent-db"
-database_id = "YOUR_D1_DATABASE_ID"
+database_id = "f77d8af5-1966-48d1-9e83-c0a781fcec9c"
 
+# Storage Configuration
 [[r2_buckets]]
-binding = "STORAGE"
+binding = "mighty_agent_storage"
 bucket_name = "mighty-agent-storage"
 
 [[r2_buckets]]
-binding = "USER_DATA"
+binding = "mighty_agent_userdata"
 bucket_name = "mighty-agent-userdata"
 
-[[kv_namespaces]]
-binding = "CACHE"
-id = "YOUR_KV_NAMESPACE_ID"
+# Container Configuration
+[containers]
+# This will use the local Dockerfile
+image = "mighty-agent:latest"
+build = { context = ".", dockerfile = "Dockerfile.cloudflare" }
 
-[vars]
-CF_ACCOUNT_ID = "YOUR_ACCOUNT_ID"
-CF_API_TOKEN = "YOUR_API_TOKEN"
-D1_DATABASE_ID = "YOUR_D1_DATABASE_ID"
-R2_BUCKET_NAME = "mighty-agent-storage"
-KV_NAMESPACE_ID = "YOUR_KV_NAMESPACE_ID"
+# Resource limits
+[containers.resources]
+cpu = 2
+memory = "10Gi"
 
-[[containers]]
-class_name = "MightyAgentContainer"
-image = "registry.cloudflare.com/mighty-agent-containers-mightyagentcontainer:fab57ce7"
-instance_type = "standard-4"
-max_instances = 5
+# Logging
+logpush = true
 
+# Durable Objects (required for containers)
 [[durable_objects.bindings]]
 name = "MIGHTY_AGENT_CONTAINER"
 class_name = "MightyAgentContainer"
 
+# Durable Objects Migrations
 [[migrations]]
 tag = "v1"
-new_sqlite_classes = ["MightyAgentContainer"]
+new_classes = ["MightyAgentContainer"]
 
-[build]
-command = "pnpm run build"
-watch_dir = "src"
+# Site configuration (if needed)
+[site]
+bucket = "./dist"
