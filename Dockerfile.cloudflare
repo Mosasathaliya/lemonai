@@ -1,0 +1,69 @@
+# Stage 1: Build the application
+FROM node:18-alpine AS builder
+
+# Set working directory
+WORKDIR /app
+
+# Install pnpm with clean cache
+RUN npm install -g pnpm@8.15.5 --no-cache
+
+# Set environment variables for build
+ENV NODE_ENV=production
+ENV NODE_OPTIONS=--max-old-space-size=4096
+
+# Copy package files first to leverage Docker cache
+COPY package.json ./
+
+# Install dependencies without requiring pnpm-lock.yaml
+RUN pnpm install
+
+# Copy the rest of the application
+COPY . .
+
+# Set proper permissions
+RUN chown -R node:node /app
+
+# Switch to non-root user
+USER node
+
+# Build the application
+RUN if [ -d "frontend" ]; then \
+        echo "Building frontend..." && \
+        cd frontend && \
+        pnpm install && \
+        pnpm run build || (echo "Frontend build failed with status $?" && exit 1); \
+    else \
+        echo "No frontend directory found, building from root..." && \
+        pnpm run build --if-present || (echo "Build failed with status $?" && exit 1); \
+    fi
+
+# Stage 2: Create the production image
+FROM node:18-alpine
+
+# Create non-root user
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+
+# Set working directory
+WORKDIR /app
+
+# Copy built application from builder
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/package*.json ./
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/public ./public
+
+# Set proper permissions
+RUN chown -R appuser:appgroup /app
+
+# Switch to non-root user
+USER appuser
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+  CMD node -e "require('http').get('http://localhost:8787/health', (res) => { if (res.statusCode !== 200) throw new Error() }).on('error', () => process.exit(1))"
+
+# Expose port
+EXPOSE 8787
+
+# Start the application
+CMD ["node", "dist/index.js"]
