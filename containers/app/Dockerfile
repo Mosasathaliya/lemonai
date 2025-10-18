@@ -1,28 +1,33 @@
-FROM node:20-alpine
+FROM node:20-bookworm-slim
 
 WORKDIR /app
 
 # Install system dependencies
-RUN apk add --no-cache python3 make g++ git curl bash
+RUN apt-get update \
+	&& apt-get install -y --no-install-recommends python3 python-is-python3 make g++ git curl bash ca-certificates libsqlite3-dev pkg-config libc++1 \
+	&& rm -rf /var/lib/apt/lists/*
 
 # Install pnpm
-RUN npm install -g pnpm
+RUN npm install -g pnpm@9.12.3
+
+ENV npm_config_unsafe_perm=true
 
 # Copy package files
 COPY package.json pnpm-lock.yaml Makefile ./
 COPY frontend/package.json frontend/pnpm-lock.yaml ./frontend/
 
 # Install dependencies
-RUN pnpm install --frozen-lockfile
-RUN cd frontend && pnpm install --frozen-lockfile
+RUN pnpm install --frozen-lockfile --unsafe-perm \
+	&& pnpm rebuild sqlite3 \
+	&& find node_modules -name "node_sqlite3.node" -print || true
+RUN cd frontend && pnpm install --frozen-lockfile --unsafe-perm
 
 # Copy frontend and build
 COPY ./frontend ./frontend
 RUN cd frontend && VITE_IS_CLIENT=true pnpm run build && rm -rf node_modules
 
-# Install Playwright
-RUN npx playwright install
-RUN npx playwright install-deps
+# Install Playwright browsers and required OS dependencies
+RUN npx playwright install --with-deps
 
 # Create workspace directory
 RUN mkdir -p workspace
